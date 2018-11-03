@@ -27,7 +27,7 @@ public class TestController {
 	@Autowired
 	Environment environment;
 	
-	@GetMapping(value= {"/","/default"})  // käivitamiseks kas http://localhost:8080 või http://localhost:8080/default
+	@GetMapping(value= {"/","/default"})  // käivitamiseks kas http://localhost:8083 või http://localhost:8083/default
 	public String vaikimisi(@RequestParam(value = "name", required = false, defaultValue = "KAMPUS BDOC Web Service") String[] Nimed) {
 		log.info("KAMPUS BDOC Web Service");
         return Nimed[0];  //default.html
