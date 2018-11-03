@@ -1,10 +1,6 @@
 package web.bdoc.controllers;
 
 
-import java.nio.charset.StandardCharsets;
-
-import javax.xml.bind.DatatypeConverter;
-
 import org.digidoc4j.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.europa.esig.dss.DSSUtils;
-import eu.europa.esig.dss.DigestAlgorithm;
-import web.bdoc.model.Digest;
 
 @RestController
 public class TestController {
@@ -30,7 +23,7 @@ public class TestController {
 	@GetMapping(value= {"/","/default"})  // käivitamiseks kas http://localhost:8083 või http://localhost:8083/default
 	public String vaikimisi(@RequestParam(value = "name", required = false, defaultValue = "KAMPUS BDOC Web Service") String[] Nimed) {
 		log.info("KAMPUS BDOC Web Service");
-        return Nimed[0];  //default.html
+        return Nimed[0];  
 	}
 
 	
