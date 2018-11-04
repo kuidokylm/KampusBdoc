@@ -3,6 +3,8 @@ package web.bdoc.controllers;
 import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.DigestAlgorithm;
 import web.bdoc.model.Digest;
+import web.bdoc.model.Signatuur;
+import web.bdoc.model.Signatuurid;
 import web.bdoc.signature.FileSigner;
 
 import org.apache.commons.io.IOUtils;
@@ -32,6 +34,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 //serialiseerimine ja deserialiseerimine
 //https://www.tutorialspoint.com/java/java_serialization.htm
@@ -114,9 +117,9 @@ public class SigningController {
 
     
     @RequestMapping(value="/getContainerSignatures", method = RequestMethod.POST)
-    public Digest getContainerSignatures(@RequestParam MultipartFile file) {
-    	Digest digest = new Digest();
-    	digest.setResult(Digest.ERROR_SIGNING);
+    public Signatuurid getContainerSignatures(@RequestParam MultipartFile file) {
+    	Signatuurid signad = new Signatuurid();
+    	signad.setResult(Digest.ERROR_GETTING_SIGNATURES);
         log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {
@@ -129,19 +132,28 @@ public class SigningController {
 	        	    fromStream(inputStream).
 	        	    build();
 	        log.debug("Konteineri signatuure kokku " + container.getSignatures().size());  
-	        
-	        Signature sig = container.getSignatures().get(0);
-	        log.debug("Konteineri signatuur " + container.getSignatures().get(0).getSigningCertificate().getSubjectName());  
-	        ValidationResult sres = sig.validateSignature();
-	        log.debug("Konteineri valideerimistulemuse vigasid " + sres.getErrors().size());
-	        
-            digest.setResult(Digest.OK);
-            digest.setHex(sig.getSigningCertificate().getSubjectName()); //BDOC
-            return digest;
+	        ArrayList<Signatuur> signatuurid = new ArrayList<Signatuur>();
+	        for (Signature sig : container.getSignatures())
+	        {
+	        	Signatuur sigu = new Signatuur();
+	        	sigu.setClaimedSigningTime(sig.getClaimedSigningTime());
+	        	sigu.setIssuerName(sig.getSigningCertificate().issuerName());
+	        	sigu.setSubjectName(sig.getSigningCertificate().getSubjectName());
+	        	signatuurid.add(sigu);
+		        log.debug("Konteineri signatuur " + sig.getSigningCertificate().getSubjectName());  
+		        log.debug("Konteineri ClaimedSigningTime " + sig.getClaimedSigningTime());
+		        log.debug("Konteineri ClaimedSigningTime " + sig.getSigningCertificate().issuerName());
+		        ValidationResult sres = sig.validateSignature();
+		        log.debug("Konteineri valideerimistulemuse vigasid " + sres.getErrors().size());
+	        }
+	        signad.setSignatuurid(signatuurid);
+            signad.setResult(Digest.OK);
+            
+            return signad;
         } catch (Exception e) {
             log.error("Viga signatuuride küsimisel "+e.getMessage(), e);
         }
-        return digest;
+        return signad;
     }
     
     

@@ -11,6 +11,7 @@ public class Digest{
     public static final String ERROR_GENERATING_HASH = "error_generating_hash";
     //public static final String ERROR_UPLOADING = "error_uploading_file";
     public static final String ERROR_SIGNING = "error_signing_file";
+    public static final String ERROR_GETTING_SIGNATURES = "error_getting_signatures";
 
     private String result;
 	private byte[] container;
