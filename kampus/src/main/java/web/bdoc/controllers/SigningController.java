@@ -227,7 +227,7 @@ public class SigningController {
             
             //byte[] containerdata = SerializationUtils.serialize(container);
             digest.setContainer(containerdata);
-	        
+            digest.setHex("application/vnd.etsi.asic-e+zip"); //BDOC
             digest.setResult(Digest.OK);
             return digest;
         } catch (Exception e) {
