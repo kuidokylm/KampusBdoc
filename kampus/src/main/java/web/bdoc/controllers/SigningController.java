@@ -5,6 +5,7 @@ import eu.europa.esig.dss.DigestAlgorithm;
 import web.bdoc.model.Digest;
 import web.bdoc.model.Signatuur;
 import web.bdoc.model.Signatuurid;
+import web.bdoc.model.Valideerimine;
 import web.bdoc.signature.FileSigner;
 
 import org.apache.commons.io.IOUtils;
@@ -12,12 +13,15 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.digidoc4j.Container;
 import org.digidoc4j.ContainerBuilder;
+import org.digidoc4j.ContainerValidationResult;
 import org.digidoc4j.DataFile;
 import org.digidoc4j.DataToSign;
 import org.digidoc4j.Signature;
 import org.digidoc4j.SignatureBuilder;
 import org.digidoc4j.ValidationResult;
+import org.digidoc4j.exceptions.DigiDoc4JException;
 import org.digidoc4j.impl.asic.asice.bdoc.BDocSignature;
+import org.digidoc4j.impl.asic.report.SignatureValidationReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 //serialiseerimine ja deserialiseerimine
 //https://www.tutorialspoint.com/java/java_serialization.htm
@@ -236,24 +242,71 @@ public class SigningController {
         return digest;
     }    
     
+ // Signer's certificate information: ID Code, first name, last name, country code etc.
+//    X509Cert certificate = signature.getSigningCertificate();
+//    String signerIdCode = certificate.getSubjectName(SERIALNUMBER);
+//    String signerFirstName = certificate.getSubjectName(GIVENNAME);
+//    String signerLastName = certificate.getSubjectName(SURNAME);
+//    String signerCountryCode = certificate.getSubjectName(C);    
     
     
-    
-//    @RequestMapping("/downloadContainer")
-//    public void downloadContainer(HttpServletResponse response) {
-//        Container container = session.getContainer();
-//        String fileName = container.getDataFiles().get(0).getName() + ".bdoc";
-//        response.setContentType(CONTAINER_MIME_TYPE);
-//        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-//        try {
-//            InputStream containerStream = container.saveAsStream();
-//            ServletOutputStream outputStream = response.getOutputStream();
-//            IOUtils.copy(containerStream, outputStream);
-//            response.flushBuffer();
-//        } catch (IOException e) {
-//            log.error("Error Writing file content to output stream", e);
-//        }
-//    }
+    @RequestMapping(value="/validateContainer", method = RequestMethod.POST)
+    public Valideerimine validateContainer(@RequestParam MultipartFile file) {
+    	Valideerimine valideerimine = new Valideerimine(Valideerimine.VALIDATION_ERRORS);
+        log.debug("valideerin konteinerit " + StringUtils.left(file.toString(), 20) + "...");    
+        try
+        {	            
+	        byte[] fileBytes = file.getBytes();	        
+	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
+	        log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
+	        Container container = ContainerBuilder.
+	        	    aContainer(Container.DocumentType.BDOC).  
+	        	    fromStream(inputStream).
+	        	    build();
+	        ContainerValidationResult cvr = container.validate();
+	        if (cvr.isValid())
+	        {
+	        	valideerimine.setResult(Digest.OK);
+	        }
+	        else
+	        {
+	        	
+	        	List<DigiDoc4JException> dde = cvr.getErrors();
+	        	String errors = dde.stream()
+	        			.map(error -> error.getMessage())
+	        			.collect(Collectors.joining(", ", "[", "]"));	        	
+	        	valideerimine.setErrors(errors);
+	        	if (cvr.hasWarnings())
+	        	{
+		        	dde = cvr.getWarnings();
+		        	errors = dde.stream()
+		        			.map(error -> error.getMessage())
+		        			.collect(Collectors.joining(", ", "[", "]"));	        	
+		        	valideerimine.setWarnings(errors);
+	        	}
+	        	List<SignatureValidationReport> rep = cvr.getReports();
+	        	if (rep.size() > 0)
+	        	{
+		        	StringBuilder sb = new StringBuilder();
+		        	for (SignatureValidationReport repo : rep)
+		        	{
+		        		
+		        		errors = repo.getErrors().stream()
+		        			.map(error -> error)
+		        			.collect(Collectors.joining(", ", "[", "]"));
+		        		sb.append(errors);
+		        	}
+		        	valideerimine.setReports(sb.toString());
+	        	}
+
+	        }
+            return valideerimine;
+        } catch (Exception e) {
+            log.error("Error validateContainer "+e.getMessage(), e);
+        }
+        return valideerimine;
+    }
+
     
     
 }
