@@ -30,6 +30,8 @@ public class FileSigner {
 //    configuration.getTSL().refresh();
 
     public Container createContainer(DataFile dataFile) {
+    	
+    	/*
     	String serdiasukoht = "Koodikaru.crt";
     	Path path = Paths.get(serdiasukoht);
     	if (Files.exists(path)) // file exist 
@@ -57,7 +59,7 @@ public class FileSigner {
     	else
     	{
     		log.info("OSCP sertifikaadi faili ei ole "+serdiasukoht);
-    	}
+    	}  */
     	configuration.setTrustedTerritories("EE"); //võib OSCP pekki keerata
         Container container = BDocContainerBuilder.
                 aContainer().
@@ -74,9 +76,9 @@ public class FileSigner {
                 withSigningCertificate(certificate).
                 withSignatureDigestAlgorithm(DIGEST_ALGORITHM).
                 //withSignatureProfile(SignatureProfile.LT_TM).  //BDOC                
-                //withSignatureProfile(SignatureProfile.LT).  //asice
+                withSignatureProfile(SignatureProfile.LT).  //asice  //kasuta seda produktsioonis
               //Note that BES signatures are missing OCSP (and Timestamp) and therefore are not valid as digital signatures by the law
-                withSignatureProfile(SignatureProfile.B_BES). //PROD reshiimis ei tee OSCP päringut
+                //withSignatureProfile(SignatureProfile.B_BES). //PROD reshiimis ei tee OSCP päringut
                 //withSignatureProfile(SignatureProfile.B_EPES).  //
                 buildDataToSign();
         return dataToSign;
