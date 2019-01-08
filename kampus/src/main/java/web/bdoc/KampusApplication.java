@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //Allatõmmatud exe nimeta ümber KampusBdoc.exe 
 //käivita Administraatori õigustes KampusBdoc.exe install
 
+//FileSigner klassis määrad ära,mis kinnitusteenust kasutad
 
 /*
 KampusBdoc.xml faili sisu 
