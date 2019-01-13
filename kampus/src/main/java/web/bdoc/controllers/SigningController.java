@@ -139,22 +139,53 @@ public class SigningController {
 	        	    build();
 	        log.debug("Konteineri signatuure kokku " + container.getSignatures().size());  
 	        ArrayList<Signatuur> signatuurid = new ArrayList<Signatuur>();
+	        boolean korras=true;
 	        for (Signature sig : container.getSignatures())
 	        {
+	        	if ( sig.getOCSPCertificate() != null )
+	        	{
+		        	if (!sig.getOCSPCertificate().isValid())
+		        	{
+		        		korras=false;	        				
+		        	}
+	        	}
 	        	Signatuur sigu = new Signatuur();
 	        	sigu.setClaimedSigningTime(sig.getClaimedSigningTime());
 	        	sigu.setIssuerName(sig.getSigningCertificate().issuerName());
 	        	sigu.setSubjectName(sig.getSigningCertificate().getSubjectName());
+	        	sigu.setErrors("");
 	        	signatuurid.add(sigu);
 		        log.debug("Konteineri signatuur " + sig.getSigningCertificate().getSubjectName());  
 		        log.debug("Konteineri ClaimedSigningTime " + sig.getClaimedSigningTime());
 		        log.debug("Konteineri ClaimedSigningTime " + sig.getSigningCertificate().issuerName());
 		        ValidationResult sres = sig.validateSignature();
 		        log.debug("Konteineri valideerimistulemuse vigasid " + sres.getErrors().size());
+		        
+		        if (sres.getErrors().size() > 0 )
+		        {
+		        	String vead = sres.getErrors().stream()
+	    		        .map( n -> n.toString() )
+	    		        .collect( Collectors.joining( ", " ) );
+		        	sigu.setErrors(vead);
+		        }
+
+		        if (sres.getWarnings().size() > 0 )
+		        {
+		        	String vead = sres.getWarnings().stream()
+	    		        .map( n -> n.toString() )
+	    		        .collect( Collectors.joining( ", " ) );
+		        	sigu.setErrors(sigu.getErrors()+" "+vead);
+		        }		        
 	        }
 	        signad.setSignatuurid(signatuurid);
-            signad.setResult(Digest.OK);
-            
+	        if (korras)
+	        {
+	        	signad.setResult(Digest.OK);
+	        }
+	        else
+	        {
+	        	signad.setResult(Digest.ERROR_INVALID_SIGNATURES);
+	        }
             return signad;
         } catch (Exception e) {
             log.error("Viga signatuuride küsimisel "+e.getMessage(), e);
