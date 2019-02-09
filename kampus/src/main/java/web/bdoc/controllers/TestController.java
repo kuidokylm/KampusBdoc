@@ -23,8 +23,8 @@ public class TestController {
 	Environment environment;
 	
 	@GetMapping(value= {"/","/default"})  // käivitamiseks kas http://localhost:8083 või http://localhost:8083/default
-	public String vaikimisi(@RequestParam(value = "name", required = false, defaultValue = "KAMPUS BDOC Web Service 1.0") String[] Nimed) {
-		log.info("KAMPUS BDOC Web Service töötamiseks Windows Servicena");
+	public String vaikimisi(@RequestParam(value = "name", required = false, defaultValue = "KAMPUS BDOC Web Service 1.1") String[] Nimed) {
+		log.info("KAMPUS BDOC Web Service töötamiseks Windows Servicena (/port - seadistuse info)");
         return Nimed[0];  
 	}
 
