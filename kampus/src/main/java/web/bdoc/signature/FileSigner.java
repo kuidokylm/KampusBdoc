@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import web.bdoc.configuration.Seadistus;
+
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -75,11 +77,7 @@ public class FileSigner {
                 aSignature(containerToSign).
                 withSigningCertificate(certificate).
                 withSignatureDigestAlgorithm(DIGEST_ALGORITHM).
-                withSignatureProfile(SignatureProfile.LT_TM).  //BDOC Time-mark, similar to LT (BDoc 2.1 format).  //kasuta seda produktsioonis             
-                //withSignatureProfile(SignatureProfile.LT).  //Time-stamp and OCSP confirmation (ASIC-E format)  
-                //Note that BES signatures are missing OCSP (and Timestamp) and therefore are not valid as digital signatures by the law
-                //withSignatureProfile(SignatureProfile.B_BES). //PROD reshiimis ei tee OSCP päringut //kasuta arenduses
-                //withSignatureProfile(SignatureProfile.B_EPES).  //no profile (baseline) with signature id (compatible with BDoc)
+                withSignatureProfile(Seadistus.getSignatureProfile()).
                 buildDataToSign();
         return dataToSign;
     }
