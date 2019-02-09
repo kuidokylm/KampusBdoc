@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import web.bdoc.configuration.Seadistus;
+
 
 @RestController
 public class TestController {
@@ -31,9 +33,18 @@ public class TestController {
 	public String port() {
 		Configuration configuration = Configuration.getInstance();
 		String port = environment.getProperty("local.server.port");
-		String info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD");
+		String info = Seadistus.getSignatureProfileName();
+		info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD")+" Profiil:"+info;
 		log.info(info);
         return info; 
 	}
+	
+//	@GetMapping(value= {"/signatureprofile"})
+//	public String signatureprofile() {
+//		
+//		String info = Seadistus.getSignatureProfileName();
+//		log.info(info);
+//        return info; 
+//	}
 	
 }

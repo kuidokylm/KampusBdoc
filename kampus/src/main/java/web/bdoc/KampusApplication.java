@@ -26,6 +26,13 @@ KampusBdoc.xml faili sisu
 <logmode>rotate</logmode>
 </service>
 
+Paigaldamine: kataloogis, kus on bdoc-0.0.1-SNAPSHOT.jar fail
+
+KampusBdoc.exe stop
+KampusBdoc.exe uninstall
+KampusBdoc.exe install
+KampusBdoc.exe start
+
 */
 
 @SpringBootApplication

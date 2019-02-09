@@ -7,6 +7,7 @@ public class Signatuur {
 	private String SubjectName;
 	private Date ClaimedSigningTime;
 	private String issuerName;
+	private String errors;
 	
 	public String getSubjectName()
 	{
@@ -32,6 +33,14 @@ public class Signatuur {
 
 	public void setIssuerName(String issuerName) {
 		this.issuerName = issuerName;
+	}
+
+	public String getErrors() {
+		return errors;
+	}
+
+	public void setErrors(String errors) {
+		this.errors = errors;
 	}
 	
 
