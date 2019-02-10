@@ -39,12 +39,20 @@ public class TestController {
         return info; 
 	}
 	
-//	@GetMapping(value= {"/signatureprofile"})
-//	public String signatureprofile() {
-//		
-//		String info = Seadistus.getSignatureProfileName();
-//		log.info(info);
-//        return info; 
-//	}
+	@GetMapping(value= {"/refreshtsl"})
+	public String refreshtsl() {
+		String vastus="ok"; 
+		try
+		{
+			Configuration configuration = Configuration.getInstance();
+			configuration.getTSL().refresh();
+		}
+		catch (Exception ex)
+		{
+			vastus=ex.getMessage();
+			log.error("refreshtsl Error: "+vastus);
+		}
+        return vastus; 
+	}
 	
 }
