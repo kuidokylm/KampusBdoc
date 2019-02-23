@@ -39,6 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,53 @@ public class SigningController {
     @Autowired
     private FileSigner signer;
 
+    
+    @RequestMapping(value="/uploadsforhash", method= RequestMethod.POST)
+    public Digest handleUploadHash(@RequestParam MultipartFile[] failid
+    		, @RequestParam String certInHex) {
+    	Digest digest = new Digest();
+    	digest.setResult(Digest.ERROR_GENERATING_HASH);
+    	String ff=Arrays.stream(failid).map( e -> e.getOriginalFilename() ).collect( Collectors.joining(",") );
+    	
+        log.debug("Töötlen ülesse laetud faile räsi jaoks"+ff);
+        try {
+            byte[] fileBytes = failid[0].getBytes();
+            String fileName = failid[0].getOriginalFilename();
+            String mimeType = failid[0].getContentType();
+            DataFile dataFile = new DataFile(fileBytes, fileName, mimeType);
+            log.debug("Loon ülesse laetud failide jaoks konteineri");
+            Container container = signer.createContainer(dataFile);
+            
+            for(int i=1;i<failid.length;i++)
+            {
+            	fileBytes = failid[i].getBytes();
+                fileName = failid[i].getOriginalFilename();
+                mimeType = failid[i].getContentType();
+                dataFile = new DataFile(fileBytes, fileName, mimeType);
+                container.addDataFile(dataFile);
+            }
+                        
+            //serialiseerime konteineri
+            byte[] containerdata = SerializationUtils.serialize(container);
+            digest.setContainer(containerdata);
+            
+            DataToSign dataToSign = signer.getDataToSign(container, certInHex);
+            //serialiseerime            
+            byte[] data = SerializationUtils.serialize(dataToSign);            
+            digest.setDataToSign(data);
+            log.debug("Genereerin konteineri räsi");
+            String dataToSignInHex =
+                    DatatypeConverter.printHexBinary(DSSUtils.digest(DigestAlgorithm.SHA256, dataToSign.getDataToSign()));
+            digest.setHex(dataToSignInHex); 
+            digest.setResult(Digest.OK);
+        } catch (IOException e) {
+            log.error("Viga üleslaetud failides " + ff+" "+e.getMessage(), e);
+            
+        }
+        return digest;
+    }
+    
+    
     @RequestMapping(value="/uploadforhash", method= RequestMethod.POST)
     public Digest handleUploadHash(@RequestParam MultipartFile file
     		, @RequestParam String certInHex) {
@@ -65,6 +113,8 @@ public class SigningController {
             DataFile dataFile = new DataFile(fileBytes, fileName, mimeType);
             log.debug("Loon ülesse laetud faili jaoks konteineri");
             Container container = signer.createContainer(dataFile);
+            
+
                         
             //serialiseerime konteineri
             byte[] containerdata = SerializationUtils.serialize(container);
