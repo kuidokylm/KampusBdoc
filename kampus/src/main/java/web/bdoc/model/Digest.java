@@ -12,6 +12,7 @@ public class Digest{
     public static final String ERROR_INVALID_SIGNATURES = "error_invalid_signature";
     public static final String ERROR_SIGNING = "error_signing_file";
     public static final String ERROR_GETTING_SIGNATURES = "error_getting_signatures";
+    public static final String ERROR_GETTING_FILES = "error_getting_files";
 
     private String result;
 	private byte[] container;

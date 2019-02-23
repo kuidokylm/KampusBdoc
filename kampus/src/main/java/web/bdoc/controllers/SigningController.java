@@ -3,6 +3,7 @@ package web.bdoc.controllers;
 import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.DigestAlgorithm;
 import web.bdoc.model.Digest;
+import web.bdoc.model.Failid;
 import web.bdoc.model.Signatuur;
 import web.bdoc.model.Signatuurid;
 import web.bdoc.model.Valideerimine;
@@ -54,7 +55,7 @@ public class SigningController {
     private FileSigner signer;
 
     
-    @RequestMapping(value="/uploadsforhash", method= RequestMethod.POST)
+    @RequestMapping(value="/multiuploadsforhash", method= RequestMethod.POST)
     public Digest handleUploadHash(@RequestParam MultipartFile[] failid
     		, @RequestParam String certInHex) {
     	Digest digest = new Digest();
@@ -388,6 +389,35 @@ public class SigningController {
         return valideerimine;
     }
 
-    
+    @RequestMapping(value="/getContainerFiles", method = RequestMethod.POST)
+    public Failid getContainerFiles(@RequestParam MultipartFile file) {
+    	Failid signad = new Failid();
+    	signad.setResult(Digest.ERROR_GETTING_FILES);
+        log.debug("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");    
+        try
+        {
+	        //loome konteineri	        
+	        byte[] fileBytes = file.getBytes();	        
+	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
+	        log.debug("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");  
+	        Container container = ContainerBuilder.
+	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
+	        	    fromStream(inputStream).
+	        	    build();
+	        log.debug("Konteineri faile kokku " + container.getDataFiles().size());  
+	        ArrayList<String> sid = new ArrayList<String>();
+	        for (DataFile sig : container.getDataFiles())
+	        {
+	        	sid.add(sig.getName());
+		        log.debug("Konteineri fail " + sig.getName());		               
+	        }
+	        signad.setFailid(sid);
+	        signad.setResult(Digest.OK);
+            return signad;
+        } catch (Exception e) {
+            log.error("Viga failide küsimisel "+e.getMessage(), e);
+        }
+        return signad;
+    }
     
 }
