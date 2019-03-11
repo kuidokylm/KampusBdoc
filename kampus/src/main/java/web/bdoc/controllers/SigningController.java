@@ -284,13 +284,13 @@ public class SigningController {
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.debug("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 20) + "...");
-        log.debug("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 20) + "...");
+        log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
+	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = ContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
 	        	    fromStream(inputStream).
@@ -298,28 +298,38 @@ public class SigningController {
 	        
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
+	        log.error("Konteiner SerializationUtils.deserialize"); 
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
 
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
+	        log.error("Konteiner signature finalize"); 
 	        Signature signature = dataToSign.finalize(signatureInHex.getBytes());
 
 	        //lisame konteinerile signatuuri
+	        log.error("Konteiner addSignature"); 
 	        container.addSignature(signature);
 	        
 	        //lisame konteinerile signatuuri
             //signer.signContainer(container, dataToSign, signatureInHex);
             
-            
+	        log.error("Konteiner container.saveAsStream"); 
             InputStream containerStream = container.saveAsStream();
+            log.error("Konteiner IOUtils.toByteArray"); 
             byte[] containerdata = IOUtils.toByteArray(containerStream);
             
             //byte[] containerdata = SerializationUtils.serialize(container);
+            log.error("Kontener digest.setContainer"); 
             digest.setContainer(containerdata);
             digest.setHex("application/vnd.etsi.asic-e+zip"); //BDOC
             digest.setResult(Digest.OK);
             return digest;
         } catch (Exception e) {
-            log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage(), e);
+        	String cause="";
+        	if (e.getCause() != null)
+        	{
+        		cause=e.getCause().getMessage();
+        	}
+            log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause, e);
             digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage());
         }
         return digest;
