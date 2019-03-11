@@ -94,8 +94,8 @@ public class SigningController {
             digest.setHex(dataToSignInHex); 
             digest.setResult(Digest.OK);
         } catch (IOException e) {
-            log.error("Viga üleslaetud failides " + ff+" "+e.getMessage(), e);
-            
+            log.error("Error Viga üleslaetud failides " + ff+" "+e.getMessage(), e);
+            digest.setResult("Error Viga üleslaetud failides " + ff+" "+e.getMessage());
         }
         return digest;
     }
@@ -113,9 +113,7 @@ public class SigningController {
             String mimeType = file.getContentType();
             DataFile dataFile = new DataFile(fileBytes, fileName, mimeType);
             log.debug("Loon ülesse laetud faili jaoks konteineri");
-            Container container = signer.createContainer(dataFile);
-            
-
+            Container container = signer.createContainer(dataFile);            
                         
             //serialiseerime konteineri
             byte[] containerdata = SerializationUtils.serialize(container);
@@ -131,8 +129,8 @@ public class SigningController {
             digest.setHex(dataToSignInHex); 
             digest.setResult(Digest.OK);
         } catch (IOException e) {
-            log.error("Viga üleslaetud failis " + file.getOriginalFilename()+" "+e.getMessage(), e);
-            
+            log.error("Error Viga üleslaetud failis " + file.getOriginalFilename()+" "+e.getMessage(), e);
+            digest.setResult("Error Viga üleslaetud failis " + file.getOriginalFilename()+" "+e.getMessage());
         }
         return digest;
     }
@@ -168,6 +166,7 @@ public class SigningController {
             return digest;
         } catch (Exception e) {
             log.error("Error Signing document "+e.getMessage(), e);
+            digest.setResult("Error Signing document "+e.getMessage());
         }
         return digest;
     }
@@ -239,7 +238,7 @@ public class SigningController {
 	        }
             return signad;
         } catch (Exception e) {
-            log.error("Viga signatuuride küsimisel "+e.getMessage(), e);
+            log.error("Error Viga signatuuride küsimisel "+e.getMessage(), e);
         }
         return signad;
     }
@@ -274,6 +273,7 @@ public class SigningController {
             return digest;
         } catch (Exception e) {
             log.error("Error getContainerToSign "+e.getMessage(), e);
+            digest.setResult("Error getContainerToSign "+e.getMessage());
         }
         return digest;
     }
@@ -319,7 +319,8 @@ public class SigningController {
             digest.setResult(Digest.OK);
             return digest;
         } catch (Exception e) {
-            log.error("Viga konteinerile signatuuri lisamisel "+e.getMessage(), e);
+            log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage(), e);
+            digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage());
         }
         return digest;
     }    
