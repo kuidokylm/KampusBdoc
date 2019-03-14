@@ -240,7 +240,7 @@ public class SigningController {
 	        }
             return signad;
         } catch (Exception e) {
-            log.error("Error Viga signatuuride küsimisel "+e.getMessage(), e);
+            log.error("Error getContainerSignatures "+e.getMessage(), e);
         }
         return signad;
     }
@@ -251,7 +251,7 @@ public class SigningController {
     public Digest getContainerToSign(@RequestParam String certInHex, @RequestParam MultipartFile file) { 
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.error("Küsin olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
+        log.error("Olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
         log.error("Konteiner " + file.getOriginalFilename());    
         try
         {	            
@@ -439,7 +439,7 @@ public class SigningController {
 	        signad.setResult(Digest.OK);
             return signad;
         } catch (Exception e) {
-            log.error("Viga failide küsimisel "+e.getMessage(), e);
+            log.error("Error Viga getContainerFiles "+e.getMessage(), e);
         }
         return signad;
     }
