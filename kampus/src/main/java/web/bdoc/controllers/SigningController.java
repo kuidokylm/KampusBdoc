@@ -246,22 +246,26 @@ public class SigningController {
     
 
     @RequestMapping(value="/getContainerToSign", method = RequestMethod.POST)
-    public Digest getContainerToSign(@RequestParam String certInHex, @RequestParam MultipartFile file) {
+    public Digest getContainerToSign(@RequestParam String certInHex, @RequestParam MultipartFile file) { 
+    	////uuendus, @RequestParam MultipartFile dfile
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Küsin olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
         log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {	            
-	        byte[] fileBytes = file.getBytes();	        
+	        byte[] fileBytes = file.getBytes();	
+	        //byte[] dataBytes = dfile.getBytes(); //uuendus
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = ContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  
-	        	    fromStream(inputStream).
+	        	    fromStream(inputStream).	        	    
 	        	    build();
 	        
-	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);
+	        	        	        	        
+	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
+	        
 	        //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
@@ -300,9 +304,16 @@ public class SigningController {
 	        fileBytes = dfile.getBytes();	        
 	        log.error("Konteiner SerializationUtils.deserialize"); 
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
+	        	        	       
+	        log.error("Konteiner getIssuerDN"); 
+	        String issn=dataToSign.getSignatureParameters().getSigningCertificate().getIssuerDN().getName();
+	        if (issn != null)
+	        {
+	        	log.error("Konteiner IssuerDN "+issn);
+	        }
 
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
-	        log.error("Konteiner signature finalize"); 
+	        log.error("Konteiner signature finalize "+signatureInHex); 
 	        Signature signature = dataToSign.finalize(signatureInHex.getBytes());
 
 	        //lisame konteinerile signatuuri
