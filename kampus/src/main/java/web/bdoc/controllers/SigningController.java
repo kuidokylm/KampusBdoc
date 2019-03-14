@@ -209,7 +209,7 @@ public class SigningController {
 	        	signatuurid.add(sigu);
 		        log.error("Konteineri signatuur " + sig.getSigningCertificate().getSubjectName());  
 		        log.error("Konteineri ClaimedSigningTime " + sig.getClaimedSigningTime());
-		        log.error("Konteineri ClaimedSigningTime " + sig.getSigningCertificate().issuerName());
+		        log.error("Konteineri sertifikaadi issuer " + sig.getSigningCertificate().issuerName());
 		        ValidationResult sres = sig.validateSignature();
 		        log.error("Konteineri valideerimistulemuse vigasid " + sres.getErrors().size());
 		        
@@ -314,12 +314,13 @@ public class SigningController {
 	        	log.error("Konteiner IssuerDN "+issn);
 	        }
 
+	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
 	        log.error("Konteiner signature finalize "+signatureInHex); 
 	        Signature signature = dataToSign.finalize(signatureInHex.getBytes());
 	        
 	        //lisame konteinerile signatuuri
-	        log.error("Konteiner addSignature"); 
+	        log.error("Konteiner addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
 	        container.addSignature(signature);
 	        
 	        //lisame konteinerile signatuuri
@@ -375,8 +376,7 @@ public class SigningController {
 	        	valideerimine.setResult(Digest.OK);
 	        }
 	        else
-	        {
-	        	
+	        {	        	
 	        	List<DigiDoc4JException> dde = cvr.getErrors();
 	        	String errors = dde.stream()
 	        			.map(error -> error.getMessage())
