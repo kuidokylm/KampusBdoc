@@ -364,7 +364,7 @@ public class SigningController {
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.error("Konteineri signatuurid " + StringUtils.left(file.getName().toString(), 20) + "...");  
+	        log.error("Konteineri signatuurid " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  
 	        	    fromStream(inputStream).
