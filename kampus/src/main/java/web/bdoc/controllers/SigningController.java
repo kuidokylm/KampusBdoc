@@ -359,7 +359,7 @@ public class SigningController {
     @RequestMapping(value="/validateContainer", method = RequestMethod.POST)
     public Valideerimine validateContainer(@RequestParam MultipartFile file) {
     	Valideerimine valideerimine = new Valideerimine(Valideerimine.VALIDATION_ERRORS);
-        log.error("valideerin konteinerit " + StringUtils.left(file.getName().toString(), 20) + "...");    
+        log.error("valideerin konteinerit " + file.getOriginalFilename());    
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
