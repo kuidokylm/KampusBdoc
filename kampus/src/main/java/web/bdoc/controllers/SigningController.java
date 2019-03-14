@@ -62,13 +62,13 @@ public class SigningController {
     	digest.setResult(Digest.ERROR_GENERATING_HASH);
     	String ff=Arrays.stream(failid).map( e -> e.getOriginalFilename() ).collect( Collectors.joining(",") );
     	
-        log.debug("Töötlen ülesse laetud faile räsi jaoks"+ff);
+        log.error("Töötlen ülesse laetud faile räsi jaoks"+ff);
         try {
             byte[] fileBytes = failid[0].getBytes();
             String fileName = failid[0].getOriginalFilename();
             String mimeType = failid[0].getContentType();
             DataFile dataFile = new DataFile(fileBytes, fileName, mimeType);
-            log.debug("Loon ülesse laetud failide jaoks konteineri");
+            log.error("Loon ülesse laetud failide jaoks konteineri");
             Container container = signer.createContainer(dataFile);
             
             for(int i=1;i<failid.length;i++)
@@ -88,7 +88,7 @@ public class SigningController {
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
-            log.debug("Genereerin konteineri räsi");
+            log.error("Genereerin konteineri räsi");
             String dataToSignInHex =
                     DatatypeConverter.printHexBinary(DSSUtils.digest(DigestAlgorithm.SHA256, dataToSign.getDataToSign()));
             digest.setHex(dataToSignInHex); 
@@ -106,13 +106,13 @@ public class SigningController {
     		, @RequestParam String certInHex) {
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_GENERATING_HASH);
-        log.debug("Töötlen ülesse laetud faili räsi jaoks"+file.getOriginalFilename());
+        log.error("Töötlen ülesse laetud faili räsi jaoks"+file.getOriginalFilename());
         try {
             byte[] fileBytes = file.getBytes();
             String fileName = file.getOriginalFilename();
             String mimeType = file.getContentType();
             DataFile dataFile = new DataFile(fileBytes, fileName, mimeType);
-            log.debug("Loon ülesse laetud faili jaoks konteineri");
+            log.error("Loon ülesse laetud faili jaoks konteineri");
             Container container = signer.createContainer(dataFile);            
                         
             //serialiseerime konteineri
@@ -123,7 +123,7 @@ public class SigningController {
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
-            log.debug("Genereerin konteineri räsi");
+            log.error("Genereerin konteineri räsi");
             String dataToSignInHex =
                     DatatypeConverter.printHexBinary(DSSUtils.digest(DigestAlgorithm.SHA256, dataToSign.getDataToSign()));
             digest.setHex(dataToSignInHex); 
@@ -140,9 +140,9 @@ public class SigningController {
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.debug("Loon konteinerit signatuuri jaoks " + StringUtils.left(signatureInHex, 20) + "...");
-        log.debug("DataToSign " + StringUtils.left(dfile.toString(), 20) + "...");
-        log.debug("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Loon konteinerit signatuuri jaoks " + StringUtils.left(signatureInHex, 20) + "...");
+        log.error("DataToSign " + StringUtils.left(dfile.toString(), 20) + "...");
+        log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {
 	        //deserialiseerime konteineri	        
@@ -176,18 +176,17 @@ public class SigningController {
     public Signatuurid getContainerSignatures(@RequestParam MultipartFile file) {
     	Signatuurid signad = new Signatuurid();
     	signad.setResult(Digest.ERROR_GETTING_SIGNATURES);
-        log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {
 	        //loome konteineri	        
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = ContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
 	        	    fromStream(inputStream).
 	        	    build();
-	        log.debug("Konteineri signatuure kokku " + container.getSignatures().size());  
+	        log.error("Konteineri signatuure kokku " + container.getSignatures().size());  
 	        ArrayList<Signatuur> signatuurid = new ArrayList<Signatuur>();
 	        boolean korras=true;
 	        for (Signature sig : container.getSignatures())
@@ -205,11 +204,11 @@ public class SigningController {
 	        	sigu.setSubjectName(sig.getSigningCertificate().getSubjectName());
 	        	sigu.setErrors("");
 	        	signatuurid.add(sigu);
-		        log.debug("Konteineri signatuur " + sig.getSigningCertificate().getSubjectName());  
-		        log.debug("Konteineri ClaimedSigningTime " + sig.getClaimedSigningTime());
-		        log.debug("Konteineri ClaimedSigningTime " + sig.getSigningCertificate().issuerName());
+		        log.error("Konteineri signatuur " + sig.getSigningCertificate().getSubjectName());  
+		        log.error("Konteineri ClaimedSigningTime " + sig.getClaimedSigningTime());
+		        log.error("Konteineri ClaimedSigningTime " + sig.getSigningCertificate().issuerName());
 		        ValidationResult sres = sig.validateSignature();
-		        log.debug("Konteineri valideerimistulemuse vigasid " + sres.getErrors().size());
+		        log.error("Konteineri valideerimistulemuse vigasid " + sres.getErrors().size());
 		        
 		        if (sres.getErrors().size() > 0 )
 		        {
@@ -249,13 +248,13 @@ public class SigningController {
     public Digest getContainerToSign(@RequestParam String certInHex, @RequestParam MultipartFile file) {
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.debug("Küsin olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
-        log.debug("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Küsin olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
+        log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
+	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = ContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  
 	        	    fromStream(inputStream).
@@ -265,7 +264,7 @@ public class SigningController {
 	        //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
-            log.debug("Genereerin konteineri räsi");
+            log.error("Genereerin konteineri räsi");
             String dataToSignInHex =
                     DatatypeConverter.printHexBinary(DSSUtils.digest(DigestAlgorithm.SHA256, dataToSign.getDataToSign()));
             digest.setHex(dataToSignInHex); 
@@ -346,12 +345,12 @@ public class SigningController {
     @RequestMapping(value="/validateContainer", method = RequestMethod.POST)
     public Valideerimine validateContainer(@RequestParam MultipartFile file) {
     	Valideerimine valideerimine = new Valideerimine(Valideerimine.VALIDATION_ERRORS);
-        log.debug("valideerin konteinerit " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("valideerin konteinerit " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.debug("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
+	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = ContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  
 	        	    fromStream(inputStream).
@@ -404,18 +403,18 @@ public class SigningController {
     public Failid getContainerFiles(@RequestParam MultipartFile file) {
     	Failid signad = new Failid();
     	signad.setResult(Digest.ERROR_GETTING_FILES);
-        log.debug("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");    
         try
         {
 	        //loome konteineri	        
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.debug("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");  
+	        log.error("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = ContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
 	        	    fromStream(inputStream).
 	        	    build();
-	        log.debug("Konteineri faile kokku " + container.getDataFiles().size());  
+	        log.error("Konteineri faile kokku " + container.getDataFiles().size());  
 	        ArrayList<String> sid = new ArrayList<String>();
 	        for (DataFile sig : container.getDataFiles())
 	        {
