@@ -12,6 +12,7 @@ import web.bdoc.signature.FileSigner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.digidoc4j.Configuration;
 import org.digidoc4j.Container;
 import org.digidoc4j.ContainerBuilder;
 import org.digidoc4j.ContainerValidationResult;
@@ -21,6 +22,7 @@ import org.digidoc4j.Signature;
 import org.digidoc4j.SignatureBuilder;
 import org.digidoc4j.ValidationResult;
 import org.digidoc4j.exceptions.DigiDoc4JException;
+import org.digidoc4j.impl.asic.asice.bdoc.BDocContainerBuilder;
 import org.digidoc4j.impl.asic.asice.bdoc.BDocSignature;
 import org.digidoc4j.impl.asic.report.SignatureValidationReport;
 import org.slf4j.Logger;
@@ -163,7 +165,7 @@ public class SigningController {
             digest.setContainer(containerdata);
             //digest.setDataToSign(SerializationUtils.serialize(container));
             digest.setResult(Digest.OK);
-            digest.setHex("application/vnd.etsi.asic-e+zip"); //BDOC
+            digest.setHex("application/vnd.etsi.asic-e+zip"); //BDOC(ASICE)
             return digest;
         } catch (Exception e) {
             log.error("Error Signing document "+e.getMessage(), e);
@@ -177,7 +179,7 @@ public class SigningController {
     public Signatuurid getContainerSignatures(@RequestParam MultipartFile file) {
     	Signatuurid signad = new Signatuurid();
     	signad.setResult(Digest.ERROR_GETTING_SIGNATURES);
-        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Konteineri signatuurid " + file.getOriginalFilename());    
         try
         {
 	        //loome konteineri	        
@@ -247,22 +249,19 @@ public class SigningController {
 
     @RequestMapping(value="/getContainerToSign", method = RequestMethod.POST)
     public Digest getContainerToSign(@RequestParam String certInHex, @RequestParam MultipartFile file) { 
-    	////uuendus, @RequestParam MultipartFile dfile
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Küsin olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
-        log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Konteiner " + file.getOriginalFilename());    
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	
-	        //byte[] dataBytes = dfile.getBytes(); //uuendus
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
-	        Container container = ContainerBuilder.
+	        log.error("Konteineri loomine " + file.getOriginalFilename());  
+	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  
 	        	    fromStream(inputStream).	        	    
-	        	    build();
-	        
+	        	    build();	        
 	        	        	        	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
 	        
@@ -287,22 +286,25 @@ public class SigningController {
     public Digest addSignToContainer(@RequestParam String signatureInHex
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
+    	Configuration configuration = Configuration.getInstance();
+    	configuration.setTrustedTerritories("EE"); 
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 20) + "...");
-        log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Konteiner " + file.getOriginalFilename());
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
-	        Container container = ContainerBuilder.
+	        log.error("Loome konteineri  " + file.getOriginalFilename());  
+	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
+	        	    withConfiguration(configuration).
 	        	    fromStream(inputStream).
 	        	    build();
 	        
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
-	        log.error("Konteiner SerializationUtils.deserialize"); 
+	        log.error("Konteiner SerializationUtils.deserialize, fileBytes Pikkus:"+fileBytes.length); 
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
 	        	        	       
 	        log.error("Konteiner getIssuerDN"); 
@@ -315,7 +317,7 @@ public class SigningController {
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
 	        log.error("Konteiner signature finalize "+signatureInHex); 
 	        Signature signature = dataToSign.finalize(signatureInHex.getBytes());
-
+	        
 	        //lisame konteinerile signatuuri
 	        log.error("Konteiner addSignature"); 
 	        container.addSignature(signature);
@@ -338,7 +340,7 @@ public class SigningController {
         	String cause="";
         	if (e.getCause() != null)
         	{
-        		cause=e.getCause().getMessage();
+        		cause=e.getCause().getMessage();        		
         	}
             log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause, e);
             digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause);
@@ -357,13 +359,13 @@ public class SigningController {
     @RequestMapping(value="/validateContainer", method = RequestMethod.POST)
     public Valideerimine validateContainer(@RequestParam MultipartFile file) {
     	Valideerimine valideerimine = new Valideerimine(Valideerimine.VALIDATION_ERRORS);
-        log.error("valideerin konteinerit " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("valideerin konteinerit " + StringUtils.left(file.getName().toString(), 20) + "...");    
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
-	        log.error("Konteineri signatuurid " + StringUtils.left(file.toString(), 20) + "...");  
-	        Container container = ContainerBuilder.
+	        log.error("Konteineri signatuurid " + StringUtils.left(file.getName().toString(), 20) + "...");  
+	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  
 	        	    fromStream(inputStream).
 	        	    build();
@@ -422,7 +424,7 @@ public class SigningController {
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.error("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");  
-	        Container container = ContainerBuilder.
+	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
 	        	    fromStream(inputStream).
 	        	    build();

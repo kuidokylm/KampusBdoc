@@ -1,6 +1,7 @@
 package web.bdoc.signature;
 
 import org.digidoc4j.*;
+import org.digidoc4j.Container.DocumentType;
 import org.digidoc4j.impl.asic.asice.bdoc.BDocContainerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -33,40 +31,11 @@ public class FileSigner {
 
     public Container createContainer(DataFile dataFile) {
     	
-    	/*
-    	String serdiasukoht = "Koodikaru.crt";
-    	Path path = Paths.get(serdiasukoht);
-    	if (Files.exists(path)) // file exist 
-    	{
-    		String pswasukoht = "Koodikaru.psw";
-    		path = Paths.get(pswasukoht);
-        	if (Files.exists(path)) // file exist 
-        	{
-        	    try
-        	    {
-        	    	log.info("Seadistan OSCP sertifikaati "+serdiasukoht);
-        	    	String salasona = new String ( Files.readAllBytes( path ) ).trim();    	    		
-    	    		configuration.setOCSPAccessCertificateFileName(serdiasukoht);
-    	    		configuration.setOCSPAccessCertificatePassword(salasona.toCharArray());    	  
-    	    		configuration.setSignOCSPRequests(true);
-        	    }
-        	    catch (IOException e)
-        	    {
-        	    	log.info("OSCP sertifikaadi salasõna lugemise viga failist "+serdiasukoht);
-        	    	log.error(e.getMessage());        	        
-        	    }
-    				
-        	}
-    	}
-    	else
-    	{
-    		log.info("OSCP sertifikaadi faili ei ole "+serdiasukoht);
-    	}  */
-    	configuration.setTrustedTerritories("EE"); //võib OSCP pekki keerata
+    	configuration.setTrustedTerritories("EE"); 
         Container container = BDocContainerBuilder.
-                aContainer().
+                aContainer(DocumentType.BDOC).
                 withDataFile(dataFile).
-                withConfiguration(configuration).
+                withConfiguration(configuration).               
                 build();
         return container;
     }
