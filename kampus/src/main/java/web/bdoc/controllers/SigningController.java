@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 //serialiseerimine ja deserialiseerimine
 //https://www.tutorialspoint.com/java/java_serialization.htm
+//https://github.com/open-eid/digidoc4j/wiki/Examples-of-using-it#simple-external-signing-example-eg-signing-in-web
 
 @RestController
 public class SigningController {
