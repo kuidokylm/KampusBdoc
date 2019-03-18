@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 //https://www.baeldung.com/spring-boot-app-as-a-service
-
+// Repositorium https://github.com/kuidokylm/KampusBdoc.git
 //http://repo.jenkins-ci.org/releases/com/sun/winsw/winsw/2.1.2/
 //Allatõmmatud exe nimeta ümber KampusBdoc.exe 
 //käivita Administraatori õigustes KampusBdoc.exe install
