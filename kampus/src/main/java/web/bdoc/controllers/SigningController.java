@@ -61,7 +61,7 @@ public class SigningController {
     	digest.setResult(Digest.ERROR_GENERATING_HASH);
     	String ff=Arrays.stream(failid).map( e -> e.getOriginalFilename() ).collect( Collectors.joining(",") );
     	
-        log.error("Töötlen ülesse laetud faile räsi jaoks"+ff);
+        log.error("Töötlen ülesse laetud faile räsi jaoks "+ff);
         try {
             byte[] fileBytes = failid[0].getBytes();
             String fileName = failid[0].getOriginalFilename();
