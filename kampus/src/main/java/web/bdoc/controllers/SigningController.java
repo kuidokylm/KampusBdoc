@@ -19,6 +19,7 @@ import org.digidoc4j.ContainerValidationResult;
 import org.digidoc4j.DataFile;
 import org.digidoc4j.DataToSign;
 import org.digidoc4j.Signature;
+import org.digidoc4j.SignatureToken;
 import org.digidoc4j.ValidationResult;
 import org.digidoc4j.exceptions.DigiDoc4JException;
 import org.digidoc4j.impl.asic.asice.bdoc.BDocContainerBuilder;
@@ -259,7 +260,8 @@ public class SigningController {
 	        	    aContainer(Container.DocumentType.BDOC).  
 	        	    fromStream(inputStream).	        	    
 	        	    build();	        
-	        	        	        	        
+	        
+	        log.error("getContainerToSign DataToSign "+certInHex);  	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
 	        
 	        log.error("DataToSign serialiseerimine");            
@@ -305,7 +307,7 @@ public class SigningController {
 	        {
 		        log.error("Signatuur " + sig.getSigningCertificate().getSubjectName());  
 		        log.error("Signatuuri ClaimedSigningTime " + sig.getClaimedSigningTime());
-		        log.error("Sugnatuuri sertifikaadi issuer " + sig.getSigningCertificate().issuerName());
+		        log.error("Signatuuri sertifikaadi issuer " + sig.getSigningCertificate().issuerName());
 		        if ( sig.getOCSPCertificate() != null )
 	        	{
 		        	if (sig.getOCSPCertificate().isValid())
@@ -313,7 +315,7 @@ public class SigningController {
 		        		log.error("Signatuuri OSCP isvalid " + sig.getOCSPCertificate().isValid());         				
 		        	}
 	        	}
-	        }	        
+	        }	        	        
 	        
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
@@ -336,9 +338,6 @@ public class SigningController {
 	        log.error("Konteiner addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
 	        container.addSignature(signature);
 	        
-	        //lisame konteinerile signatuuri
-            //signer.signContainer(container, dataToSign, signatureInHex);
-            
 	        log.error("Konteiner container.saveAsStream"); 
             InputStream containerStream = container.saveAsStream();
             log.error("Konteiner IOUtils.toByteArray"); 
