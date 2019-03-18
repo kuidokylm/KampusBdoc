@@ -248,7 +248,7 @@ public class SigningController {
     public Digest getContainerToSign(@RequestParam String certInHex, @RequestParam MultipartFile file) { 
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.error("Olemasolevale konteinerile signatuuri " + StringUtils.left(certInHex, 20) + "...");
+        log.error("Olemasolevale konteinerile signatuur " + StringUtils.left(certInHex, 30) + "...");
         log.error("Konteiner " + file.getOriginalFilename());    
         try
         {	            
@@ -300,16 +300,31 @@ public class SigningController {
 	        	    fromStream(inputStream).
 	        	    build();
 	        
+	        log.error("Olemasoleva konteineri signatuurid " + file.getOriginalFilename()); 
+	        for (Signature sig : container.getSignatures())
+	        {
+		        log.error("Signatuur " + sig.getSigningCertificate().getSubjectName());  
+		        log.error("Signatuuri ClaimedSigningTime " + sig.getClaimedSigningTime());
+		        log.error("Sugnatuuri sertifikaadi issuer " + sig.getSigningCertificate().issuerName());
+		        if ( sig.getOCSPCertificate() != null )
+	        	{
+		        	if (sig.getOCSPCertificate().isValid())
+		        	{
+		        		log.error("Signatuuri OSCP isvalid " + sig.getOCSPCertificate().isValid());         				
+		        	}
+	        	}
+	        }	        
+	        
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
-	        log.error("Konteiner SerializationUtils.deserialize, fileBytes Pikkus:"+fileBytes.length); 
+	        log.error("Konteiner DataToSign SerializationUtils.deserialize, fileBytes Pikkus: "+fileBytes.length); 
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
 	        	        	       
-	        log.error("Konteiner getIssuerDN"); 
+	        log.error("Konteiner DataToSign getIssuerDN"); 
 	        String issn=dataToSign.getSignatureParameters().getSigningCertificate().getIssuerDN().getName();
 	        if (issn != null)
 	        {
-	        	log.error("Konteiner IssuerDN "+issn);
+	        	log.error("Konteiner DataToSign IssuerDN "+issn);
 	        }
 
 	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
