@@ -139,9 +139,9 @@ public class SigningController {
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.error("Loon konteinerit signatuuri jaoks " + StringUtils.left(signatureInHex, 20) + "...");
-        log.error("DataToSign " + StringUtils.left(dfile.toString(), 20) + "...");
-        log.error("Konteiner " + StringUtils.left(file.toString(), 20) + "...");    
+        log.error("Loon konteinerit signatuuri jaoks " + StringUtils.left(signatureInHex, 30) + "...");
+        log.error("DataToSign " + dfile.getOriginalFilename());
+        log.error("Konteiner " + file.getOriginalFilename());    
         try
         {
 	        //deserialiseerime konteineri	        
@@ -153,6 +153,7 @@ public class SigningController {
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
                            
 	        //lisame konteinerile signatuuri
+	        log.error("Lisan konteinerile signatuuri");  
             signer.signContainer(container, dataToSign, signatureInHex);
             InputStream containerStream = container.saveAsStream();
             byte[] containerdata = IOUtils.toByteArray(containerStream);
@@ -261,7 +262,7 @@ public class SigningController {
 	        	        	        	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
 	        
-	        //serialiseerime            
+	        log.error("DataToSign serialiseerimine");            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
             log.error("Genereerin konteineri räsi");
@@ -285,8 +286,9 @@ public class SigningController {
     	Configuration configuration = Configuration.getInstance();
     	configuration.setTrustedTerritories("EE"); 
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.error("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 20) + "...");
+        log.error("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 30) + "...");
         log.error("Konteiner " + file.getOriginalFilename());
+        log.error("DataToSign " + dfile.getOriginalFilename());
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
@@ -312,7 +314,7 @@ public class SigningController {
 
 	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
-	        log.error("Konteiner signature finalize "+signatureInHex); 
+	        log.error("Konteiner DataToSign finalize "+signatureInHex); 
 	        Signature signature = dataToSign.finalize(signatureInHex.getBytes());
 	        
 	        //lisame konteinerile signatuuri
