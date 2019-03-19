@@ -333,7 +333,11 @@ public class SigningController {
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
 	        log.error("Konteiner DataToSign finalize "+signatureInHex); 
 	        //Signature signature = dataToSign.finalize(signatureInHex.getBytes());
-	        Signature signature = dataToSign.finalize(decodeHexString(signatureInHex));
+	        byte[] serdibaidid=org.bouncycastle.util.encoders.Hex.decode(signatureInHex);
+	        Signature signature = dataToSign.finalize(serdibaidid);
+	        //Signature signature = dataToSign.finalize(decodeHexString(signatureInHex));
+	        
+	        
 	        
 	        
 	        //lisame konteinerile signatuuri
@@ -458,6 +462,7 @@ public class SigningController {
         return signad;
     }
     
+    /*
     public byte[] decodeHexString(String hexString) {
         if (hexString.length() % 2 == 1) {
             throw new IllegalArgumentException(
@@ -485,5 +490,5 @@ public class SigningController {
         }
         return digit;
     }
-    
+    */
 }
