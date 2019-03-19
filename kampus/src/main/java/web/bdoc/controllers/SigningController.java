@@ -331,9 +331,10 @@ public class SigningController {
 
 	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
-	        log.error("Konteiner DataToSign finalize "+signatureInHex); 
+	        log.error("Bouncycastle encoders.Hex.decode "+signatureInHex); 
 	        //Signature signature = dataToSign.finalize(signatureInHex.getBytes());
 	        byte[] serdibaidid=org.bouncycastle.util.encoders.Hex.decode(signatureInHex);
+	        log.error("Konteiner DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
 	        //Signature signature = dataToSign.finalize(decodeHexString(signatureInHex));
 	        
