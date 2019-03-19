@@ -332,7 +332,9 @@ public class SigningController {
 	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
 	        log.error("Konteiner DataToSign finalize "+signatureInHex); 
-	        Signature signature = dataToSign.finalize(signatureInHex.getBytes());
+	        //Signature signature = dataToSign.finalize(signatureInHex.getBytes());
+	        Signature signature = dataToSign.finalize(decodeHexString(signatureInHex));
+	        
 	        
 	        //lisame konteinerile signatuuri
 	        log.error("Konteiner addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
@@ -454,6 +456,34 @@ public class SigningController {
             log.error("Error Viga getContainerFiles "+e.getMessage(), e);
         }
         return signad;
+    }
+    
+    public byte[] decodeHexString(String hexString) {
+        if (hexString.length() % 2 == 1) {
+            throw new IllegalArgumentException(
+              "Invalid hexadecimal String supplied.");
+        }
+         
+        byte[] bytes = new byte[hexString.length() / 2];
+        for (int i = 0; i < hexString.length(); i += 2) {
+            bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));
+        }
+        return bytes;
+    }
+    
+    public byte hexToByte(String hexString) {
+        int firstDigit = toDigit(hexString.charAt(0));
+        int secondDigit = toDigit(hexString.charAt(1));
+        return (byte) ((firstDigit << 4) + secondDigit);
+    }
+    
+    private int toDigit(char hexChar) {
+        int digit = Character.digit(hexChar, 16);
+        if(digit == -1) {
+            throw new IllegalArgumentException(
+              "Invalid Hexadecimal Character: "+ hexChar);
+        }
+        return digit;
     }
     
 }
