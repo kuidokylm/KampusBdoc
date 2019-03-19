@@ -2,6 +2,7 @@ package web.bdoc.controllers;
 //koopia DigiDoc4j Hwcrypto Demo
 import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.DigestAlgorithm;
+import web.bdoc.configuration.Seadistus;
 import web.bdoc.model.Digest;
 import web.bdoc.model.Failid;
 import web.bdoc.model.Signatuur;
@@ -250,19 +251,23 @@ public class SigningController {
     	Digest digest = new Digest();
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Olemasolevale konteinerile signatuur " + StringUtils.left(certInHex, 30) + "...");
-        log.error("Konteiner " + file.getOriginalFilename());    
+        log.error("Konteiner " + file.getOriginalFilename());
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.error("Konteineri loomine " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
-	        	    aContainer(Container.DocumentType.BDOC).  
+	        	    aContainer(Container.DocumentType.BDOC).
 	        	    fromStream(inputStream).	        	    
 	        	    build();	        
 	        
+	        log.error("Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
+	        
 	        log.error("getContainerToSign DataToSign "+certInHex);  	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
+	        log.error("DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().toString());
+
 	        
 	        log.error("DataToSign serialiseerimine");            
             byte[] data = SerializationUtils.serialize(dataToSign);            
@@ -286,11 +291,13 @@ public class SigningController {
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
     	Configuration configuration = Configuration.getInstance();
+    	
     	configuration.setTrustedTerritories("EE"); 
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 30) + "...");
         log.error("Konteiner " + file.getOriginalFilename());
         log.error("DataToSign " + dfile.getOriginalFilename());
+        log.error("Configuration profile " + configuration.getSignatureProfile().toString());
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
@@ -298,7 +305,7 @@ public class SigningController {
 	        log.error("Loome konteineri  " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
-	        	    withConfiguration(configuration).
+	        	    withConfiguration(configuration).	        	    
 	        	    fromStream(inputStream).
 	        	    build();
 	        
@@ -317,6 +324,8 @@ public class SigningController {
 	        	}
 	        }	        	        
 	        
+	        log.error("Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
+	        
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
 	        log.error("Konteiner DataToSign SerializationUtils.deserialize, fileBytes Pikkus: "+fileBytes.length); 
@@ -328,18 +337,19 @@ public class SigningController {
 	        {
 	        	log.error("Konteiner DataToSign IssuerDN "+issn);
 	        }
+	        	
+	        log.error("Konteiner DataToSign SignatureProfile "+dataToSign.getConfiguration().getSignatureProfile().toString());
 
 	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
 		    //Finalize the signature with OCSP response and timestamp (or timemark)
-	        log.error("Bouncycastle encoders.Hex.decode "+signatureInHex); 
+	        //log.error("Bouncycastle encoders.Hex.decode "+signatureInHex); 
 	        //Signature signature = dataToSign.finalize(signatureInHex.getBytes());
-	        byte[] serdibaidid=org.bouncycastle.util.encoders.Hex.decode(signatureInHex);
+	        //byte[] serdibaidid=org.bouncycastle.util.encoders.Hex.decode(signatureInHex);
+	        log.error("DatatypeConverter.parseHexBinary "+signatureInHex);
+	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
+	        
 	        log.error("Konteiner DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
-	        //Signature signature = dataToSign.finalize(decodeHexString(signatureInHex));
-	        
-	        
-	        
 	        
 	        //lisame konteinerile signatuuri
 	        log.error("Konteiner addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
