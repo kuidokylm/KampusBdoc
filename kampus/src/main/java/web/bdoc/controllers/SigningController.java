@@ -344,11 +344,6 @@ public class SigningController {
 	        	
 	        log.error("Konteiner DataToSign SignatureProfile "+dataToSign.getConfiguration().getSignatureProfile().toString());
 
-	        //https://github.com/esig/dss/blob/master/dss-xades/src/main/java/eu/europa/esig/dss/xades/validation/XAdESSignature.java
-		    //Finalize the signature with OCSP response and timestamp (or timemark)
-	        //log.error("Bouncycastle encoders.Hex.decode "+signatureInHex); 
-	        //Signature signature = dataToSign.finalize(signatureInHex.getBytes());
-	        //byte[] serdibaidid=org.bouncycastle.util.encoders.Hex.decode(signatureInHex);
 	        log.error("DatatypeConverter.parseHexBinary "+signatureInHex);
 	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
 	        	        
