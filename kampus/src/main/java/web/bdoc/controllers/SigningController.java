@@ -330,6 +330,10 @@ public class SigningController {
 	        fileBytes = dfile.getBytes();	        
 	        log.error("Konteiner DataToSign SerializationUtils.deserialize, fileBytes Pikkus: "+fileBytes.length); 
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
+	        
+	        log.error("Konteiner DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());
+	        	        
+	        dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	        
 	        	        	       
 	        log.error("Konteiner DataToSign getIssuerDN"); 
 	        String issn=dataToSign.getSignatureParameters().getSigningCertificate().getIssuerDN().getName();
@@ -347,7 +351,7 @@ public class SigningController {
 	        //byte[] serdibaidid=org.bouncycastle.util.encoders.Hex.decode(signatureInHex);
 	        log.error("DatatypeConverter.parseHexBinary "+signatureInHex);
 	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
-	        
+	        	        
 	        log.error("Konteiner DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
 	        
