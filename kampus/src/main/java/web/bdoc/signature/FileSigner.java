@@ -61,7 +61,7 @@ public class FileSigner {
         this.configuration = configuration;
     }
 
-    private X509Certificate getCertificate(String certificateInHex) {
+    public X509Certificate getCertificate(String certificateInHex) {
         byte[] certificateBytes = DatatypeConverter.parseHexBinary(certificateInHex);
         try (InputStream inStream = new ByteArrayInputStream(certificateBytes)) {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
