@@ -9,7 +9,7 @@ import web.bdoc.model.Signatuur;
 import web.bdoc.model.Signatuurid;
 import web.bdoc.model.Valideerimine;
 import web.bdoc.signature.FileSigner;
-
+import java.security.cert.X509Certificate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -292,7 +292,7 @@ public class SigningController {
     	Digest digest = new Digest();
     	Configuration configuration = Configuration.getInstance();
     	
-    	configuration.setTrustedTerritories("EE"); 
+    	configuration.setTrustedTerritories("EE");     	
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Lisan olemasolevale konteinerile signatuuri " + StringUtils.left(signatureInHex, 30) + "...");
         log.error("Konteiner " + file.getOriginalFilename());
@@ -326,14 +326,37 @@ public class SigningController {
 	        
 	        log.error("Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
 	        
-	        //deserialiseerime datatosign 	        
+	        log.error("DatatypeConverter.parseHexBinary "+signatureInHex);
+	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
+	        
+	        //deserialiseerime datatosign 	  
+	        //eelmine osa
+	        /*
 	        fileBytes = dfile.getBytes();	        
 	        log.error("Konteiner DataToSign SerializationUtils.deserialize, fileBytes Pikkus: "+fileBytes.length); 
-	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
+	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);	        
+	        
+			*/
+	        
+	        
+	        //siit algab uus osa
+	        log.error("Konteiner getCertificate"); 	        
+	        X509Certificate signerCert = signer.getCertificate(signatureInHex);
+	        
+	        log.error("Konteiner SignatureBuilder");
+	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
+	        	    aSignature(container).
+	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
+	        	    withSignatureProfile(Seadistus.getSignatureProfile()).
+	        	    withSigningCertificate(signerCert);
+
+	        log.error("Konteiner buildDataToSign");
+	        DataToSign dataToSign = builder.buildDataToSign();
+	        //siin lõpeb uus osa
 	        
 	        log.error("Konteiner DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());
-	        	        
-	        dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	        
+	        
+	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	        
 	        	        	       
 	        log.error("Konteiner DataToSign getIssuerDN"); 
 	        String issn=dataToSign.getSignatureParameters().getSigningCertificate().getIssuerDN().getName();
@@ -343,9 +366,7 @@ public class SigningController {
 	        }
 	        	
 	        log.error("Konteiner DataToSign SignatureProfile "+dataToSign.getConfiguration().getSignatureProfile().toString());
-
-	        log.error("DatatypeConverter.parseHexBinary "+signatureInHex);
-	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
+	        
 	        	        
 	        log.error("Konteiner DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
