@@ -360,6 +360,7 @@ public class SigningController {
         return digest;
     }    
     
+    /*
     @RequestMapping(value="/addSignToContainer", method = RequestMethod.POST)
     public Digest addSignToContainer(@RequestParam String signatureInHex
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
@@ -450,7 +451,7 @@ public class SigningController {
         }
         return digest;
     }    
-    
+    */
     
     @RequestMapping(value="/validateContainer", method = RequestMethod.POST)
     public Valideerimine validateContainer(@RequestParam MultipartFile file) {
