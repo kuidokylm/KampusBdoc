@@ -295,13 +295,17 @@ public class SigningController {
     public Digest addLTTMSignToContainer(@RequestParam String sertInHex,@RequestParam String signatureInHex
     		, @RequestParam MultipartFile file) {
     	Digest digest = new Digest();
-    	//Configuration configuration = Configuration.getInstance();
-    	
-    	//configuration.setTrustedTerritories("EE");      	
+    	Configuration configuration = Configuration.getInstance();
+    	String ocspresponderstm = configuration.getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", "));
+    	log.error("Configuration AllowedOcspRespondersForTM "+ocspresponderstm);
+    	log.error("Configuration getOcspSource "+configuration.getOcspSource());
+    	log.error("Configuration getTspSource "+configuration.getTspSource());
+    	log.error("Configuration profile " + configuration.getSignatureProfile().name());
+    	String profiil="";
+    	configuration.setTrustedTerritories("EE");      	
     	digest.setResult(Digest.ERROR_SIGNING);
-        log.error("Lisan olemasolevale konteinerile sertifikaati");
-        log.error("Konteiner " + file.getOriginalFilename());
-        //log.error("Configuration profile " + configuration.getSignatureProfile().toString());
+        log.error("Lisan olemasolevale konteinerile sertifikaati " + file.getOriginalFilename());
+       
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
@@ -309,17 +313,15 @@ public class SigningController {
 	        log.error("Loome konteineri  " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
-	        	    //withConfiguration(configuration).    	    
+	        	    withConfiguration(configuration).    	    
 	        	    fromStream(inputStream).
 	        	    build();
         
 	        log.error("DatatypeConverter.parseHexBinary "+signatureInHex);
 	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);	        
 	        
-	        //siit algab uus osa
 	        log.error("Konteiner getCertificate"); 	        
-	        X509Certificate signerCert = signer.getCertificate(sertInHex);
-	        
+	        X509Certificate signerCert = signer.getCertificate(sertInHex);	        
 	        log.error("Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
 	        
 	        log.error("Konteiner SignatureBuilder");
@@ -327,23 +329,21 @@ public class SigningController {
 	        	    aSignature(container).
 	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
 	        	    withSignatureProfile(SignatureProfile.LT_TM).  //Seadistus.getSignatureProfile()
-	        	    withSignatureId("S0").
 	        	    withSigningCertificate(signerCert);
-	        	        
-	        log.error("Konteiner buildDataToSign");
-	        DataToSign dataToSign = builder.withSignatureProfile(SignatureProfile.LT_TM).buildDataToSign();
 	        
-	        log.error("Konteiner DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());
-	        
+	        DataToSign dataToSign = builder.withSignatureProfile(SignatureProfile.LT_TM).buildDataToSign();	
+	        profiil=dataToSign.getConfiguration().getSignatureProfile().name();
+	        log.error("DataToSign SignatureProfile: "+profiil);	        
+	        log.error("DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
+	        log.error("DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
+	        log.error("DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
 	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	        
-	        	
-	        log.error("Konteiner DataToSign SignatureProfile "+dataToSign.getConfiguration().getSignatureProfile().toString());	        
 	        	        
 	        log.error("Konteiner DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
 	        
 	        //lisame konteinerile signatuuri
-	        log.error("Konteiner addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
+	        log.error("Konteiner addSignature, SubjectName: "+signature.getSigningCertificate().getSubjectName()); 
 	        container.addSignature(signature);
 	        
 	        log.error("Konteiner container.saveAsStream"); 
