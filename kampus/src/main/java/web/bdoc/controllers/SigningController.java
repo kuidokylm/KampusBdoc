@@ -362,8 +362,8 @@ public class SigningController {
         	{
         		cause=e.getCause().getMessage();        		
         	}
-            log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause, e);
-            digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause);
+            log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause+" Profiil:"+profiil, e);
+            digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause+" Profiil:"+profiil);
         }
         return digest;
     }    
