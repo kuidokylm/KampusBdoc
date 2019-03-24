@@ -291,13 +291,13 @@ public class SigningController {
     public Digest addLTTMSignToContainer(@RequestParam String sertInHex,@RequestParam String signatureInHex
     		, @RequestParam MultipartFile file) {
     	Digest digest = new Digest();
-    	Configuration configuration = Configuration.getInstance();
+    	//Configuration configuration = Configuration.getInstance();
     	
-    	configuration.setTrustedTerritories("EE");     	
+    	//configuration.setTrustedTerritories("EE");      	
     	digest.setResult(Digest.ERROR_SIGNING);
         log.error("Lisan olemasolevale konteinerile sertifikaati");
         log.error("Konteiner " + file.getOriginalFilename());
-        log.error("Configuration profile " + configuration.getSignatureProfile().toString());
+        //log.error("Configuration profile " + configuration.getSignatureProfile().toString());
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
@@ -305,7 +305,7 @@ public class SigningController {
 	        log.error("Loome konteineri  " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
-	        	    withConfiguration(configuration).    	    
+	        	    //withConfiguration(configuration).    	    
 	        	    fromStream(inputStream).
 	        	    build();
         
