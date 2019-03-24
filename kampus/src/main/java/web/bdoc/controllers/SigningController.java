@@ -20,6 +20,7 @@ import org.digidoc4j.ContainerValidationResult;
 import org.digidoc4j.DataFile;
 import org.digidoc4j.DataToSign;
 import org.digidoc4j.Signature;
+import org.digidoc4j.SignatureProfile;
 import org.digidoc4j.SignatureToken;
 import org.digidoc4j.ValidationResult;
 import org.digidoc4j.exceptions.DigiDoc4JException;
@@ -315,15 +316,17 @@ public class SigningController {
 	        log.error("Konteiner getCertificate"); 	        
 	        X509Certificate signerCert = signer.getCertificate(sertInHex);
 	        
+	        log.error("Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
+	        
 	        log.error("Konteiner SignatureBuilder");
 	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
 	        	    aSignature(container).
 	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
-	        	    withSignatureProfile(Seadistus.getSignatureProfile()).
+	        	    withSignatureProfile(SignatureProfile.LT_TM).  //Seadistus.getSignatureProfile()
 	        	    withSigningCertificate(signerCert);
-
+	        	        
 	        log.error("Konteiner buildDataToSign");
-	        DataToSign dataToSign = builder.buildDataToSign();
+	        DataToSign dataToSign = builder.withSignatureProfile(SignatureProfile.LT_TM).buildDataToSign();
 	        
 	        log.error("Konteiner DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());
 	        
