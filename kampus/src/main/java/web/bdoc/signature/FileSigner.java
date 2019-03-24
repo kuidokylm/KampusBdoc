@@ -30,8 +30,8 @@ public class FileSigner {
 //    configuration.getTSL().refresh();
 
     public Container createContainer(DataFile dataFile) {
-    	
     	configuration.setTrustedTerritories("EE"); 
+    	log.error("createContainer profile: " + configuration.getSignatureProfile().name());
         Container container = BDocContainerBuilder.
                 aContainer(DocumentType.BDOC).
                 withDataFile(dataFile).

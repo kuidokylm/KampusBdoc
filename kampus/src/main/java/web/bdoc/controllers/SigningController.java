@@ -86,7 +86,9 @@ public class SigningController {
             byte[] containerdata = SerializationUtils.serialize(container);
             digest.setContainer(containerdata);
             
-            DataToSign dataToSign = signer.getDataToSign(container, certInHex);
+            DataToSign dataToSign = signer.getDataToSign(container, certInHex);            
+            log.error("dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
+            
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
@@ -122,6 +124,7 @@ public class SigningController {
             digest.setContainer(containerdata);
             
             DataToSign dataToSign = signer.getDataToSign(container, certInHex);
+            log.error("dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
@@ -153,8 +156,9 @@ public class SigningController {
 	        
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
-	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);
-                           
+	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);                       
+	        log.error("dataToSign profiil "+dataToSign.getConfiguration().getSignatureProfile().name());  
+	        
 	        //lisame konteinerile signatuuri
 	        log.error("Lisan konteinerile signatuuri");  
             signer.signContainer(container, dataToSign, signatureInHex);
@@ -323,6 +327,7 @@ public class SigningController {
 	        	    aSignature(container).
 	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
 	        	    withSignatureProfile(SignatureProfile.LT_TM).  //Seadistus.getSignatureProfile()
+	        	    withSignatureId("S0").
 	        	    withSigningCertificate(signerCert);
 	        	        
 	        log.error("Konteiner buildDataToSign");
