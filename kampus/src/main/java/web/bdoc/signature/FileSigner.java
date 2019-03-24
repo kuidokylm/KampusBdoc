@@ -24,19 +24,21 @@ public class FileSigner {
     private static final DigestAlgorithm DIGEST_ALGORITHM = DigestAlgorithm.SHA256;
     
     //private Configuration configuration = new Configuration(Configuration.Mode.TEST);
-    //private Configuration configuration = new Configuration(Configuration.Mode.PROD);
-    private Configuration configuration = Configuration.getInstance();
+    private Configuration configuration = new Configuration(Configuration.Mode.PROD);
+    
+    //private Configuration configuration = Configuration.getInstance();
            
 //    configuration.getTSL().refresh();
 
     public Container createContainer(DataFile dataFile) {
     	configuration.setTrustedTerritories("EE"); 
-    	log.error("createContainer profile: " + configuration.getSignatureProfile().name());
+    	log.error("FileSigner createContainer configuration build profile: " + configuration.getSignatureProfile().name());
         Container container = BDocContainerBuilder.
                 aContainer(DocumentType.BDOC).
                 withDataFile(dataFile).
                 withConfiguration(configuration).               
                 build();
+        log.error("FileSigner createContainer container profile: " + container.getConfiguration().getSignatureProfile().name());        
         return container;
     }
 
@@ -48,6 +50,7 @@ public class FileSigner {
                 withSignatureDigestAlgorithm(DIGEST_ALGORITHM).
                 withSignatureProfile(Seadistus.getSignatureProfile()).
                 buildDataToSign();
+        log.error("FileSigner getDataToSign dataToSign profile: " + dataToSign.getConfiguration().getSignatureProfile().name());
         return dataToSign;
     }
 

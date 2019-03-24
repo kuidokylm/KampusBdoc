@@ -157,7 +157,7 @@ public class SigningController {
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);                       
-	        log.error("dataToSign profiil "+dataToSign.getConfiguration().getSignatureProfile().name());  
+	        log.error("createContainer dataToSign profiil "+dataToSign.getConfiguration().getSignatureProfile().name());  
 	        
 	        //lisame konteinerile signatuuri
 	        log.error("Lisan konteinerile signatuuri");  
