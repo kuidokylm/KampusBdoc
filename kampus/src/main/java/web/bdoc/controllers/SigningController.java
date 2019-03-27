@@ -267,8 +267,7 @@ public class SigningController {
 	        	    build();	        
 	        
 	        log.info("getContainerToSign Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
-	        
-	        log.info("getContainerToSign DataToSign "+certInHex);  	        
+	        log.info("getContainerToSign DataToSign "+StringUtils.left(certInHex, 30) + "...");  	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
 	        log.info("DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().toString());
 
@@ -333,8 +332,8 @@ public class SigningController {
 	        log.info("DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
 	        log.info("DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
 	        log.info("DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
-	        dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	     
-	        log.info("DataToSign muudetud TspSource: "+dataToSign.getConfiguration().getTspSource());
+	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	     
+	        //log.info("DataToSign muudetud TspSource: "+dataToSign.getConfiguration().getTspSource());
 	        	        
 	        log.info("DatatypeConverter.parseHexBinary "+signatureInHex);
 	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
