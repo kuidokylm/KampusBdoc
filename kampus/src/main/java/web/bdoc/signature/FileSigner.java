@@ -31,14 +31,14 @@ public class FileSigner {
 //    configuration.getTSL().refresh();
 
     public Container createContainer(DataFile dataFile) {
-    	configuration.setTrustedTerritories("EE"); 
-    	log.error("FileSigner createContainer configuration build profile: " + configuration.getSignatureProfile().name());
+    	configuration.setTrustedTerritories("EE");     	
+    	log.info("FileSigner createContainer configuration build profile: " + configuration.getSignatureProfile().name());
         Container container = BDocContainerBuilder.
-                aContainer(DocumentType.BDOC).
-                withDataFile(dataFile).
+                aContainer(DocumentType.BDOC).        		
+                withDataFile(dataFile).                
                 withConfiguration(configuration).               
                 build();
-        log.error("FileSigner createContainer container profile: " + container.getConfiguration().getSignatureProfile().name());        
+        log.info("FileSigner createContainer container profile: " + container.getConfiguration().getSignatureProfile().name());        
         return container;
     }
 
@@ -48,9 +48,9 @@ public class FileSigner {
                 aSignature(containerToSign).
                 withSigningCertificate(certificate).
                 withSignatureDigestAlgorithm(DIGEST_ALGORITHM).
-                withSignatureProfile(Seadistus.getSignatureProfile()).
+                withSignatureProfile(SignatureProfile.LT_TM). //Seadistus.getSignatureProfile()
                 buildDataToSign();
-        log.error("FileSigner getDataToSign dataToSign profile: " + dataToSign.getConfiguration().getSignatureProfile().name());
+        log.info("FileSigner getDataToSign dataToSign profile: " + dataToSign.getConfiguration().getSignatureProfile().name());        
         return dataToSign;
     }
 
