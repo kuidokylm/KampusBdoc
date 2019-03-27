@@ -269,7 +269,7 @@ public class SigningController {
 	        log.info("getContainerToSign Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
 	        log.info("getContainerToSign DataToSign "+StringUtils.left(certInHex, 30) + "...");  	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
-	        log.info("DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().toString());
+	        log.info("getContainerToSign DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().name().toString());
 
 	        
 	        log.info("DataToSign serialiseerimine");            
