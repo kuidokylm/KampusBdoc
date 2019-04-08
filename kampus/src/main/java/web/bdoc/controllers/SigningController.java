@@ -189,7 +189,7 @@ public class SigningController {
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        Container container = ContainerBuilder.
-	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
+	        	    aContainer(Container.DocumentType.ASICE).  
 	        	    fromStream(inputStream).
 	        	    build();
 	        log.info("Konteineri signatuure kokku " + container.getSignatures().size());  
@@ -262,7 +262,7 @@ public class SigningController {
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.info("Konteineri loomine " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
-	        	    aContainer(Container.DocumentType.BDOC).
+	        	    aContainer(Container.DocumentType.ASICE).
 	        	    fromStream(inputStream).	        	    
 	        	    build();	        
 	        
@@ -310,7 +310,7 @@ public class SigningController {
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.info("addLTTMSignToContainer Loome konteineri  " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
-	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
+	        	    aContainer(Container.DocumentType.ASICE).  
 	        	    withConfiguration(configuration).    	    
 	        	    fromStream(inputStream).
 	        	    build();        	        	        
@@ -323,10 +323,10 @@ public class SigningController {
 	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
 	        	    aSignature(container).
 	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
-	        	    withSignatureProfile(SignatureProfile.LT_TM).  //Seadistus.getSignatureProfile()
+	        	    withSignatureProfile(Seadistus.getSignatureProfile()). 
 	        	    withSigningCertificate(signerCert);
 	        //Seadistus.getSignatureProfile()
-	        DataToSign dataToSign = builder.withSignatureProfile(SignatureProfile.LT_TM).buildDataToSign();	
+	        DataToSign dataToSign = builder.withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();	
 	        profiil=dataToSign.getConfiguration().getSignatureProfile().name();
 	        log.info("DataToSign SignatureProfile: "+profiil);	        
 	        log.info("DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
@@ -352,7 +352,7 @@ public class SigningController {
             
             log.info("Kontener digest.setContainer"); 
             digest.setContainer(containerdata);
-            digest.setHex("application/vnd.etsi.asic-e+zip"); //BDOC
+            digest.setHex("application/vnd.etsi.asic-e+zip"); 
             digest.setResult(Digest.OK);
             return digest;
         } catch (Exception e) {
@@ -470,7 +470,7 @@ public class SigningController {
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.info("Konteineri signatuurid " + file.getOriginalFilename());  
 	        Container container = BDocContainerBuilder.
-	        	    aContainer(Container.DocumentType.BDOC).  
+	        	    aContainer(Container.DocumentType.ASICE).  
 	        	    fromStream(inputStream).
 	        	    build();
 	        ContainerValidationResult cvr = container.validate();
@@ -528,7 +528,7 @@ public class SigningController {
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.info("Konteineri failid " + StringUtils.left(file.toString(), 20) + "...");  
 	        Container container = BDocContainerBuilder.
-	        	    aContainer(Container.DocumentType.BDOC).  // Container type is BDoc
+	        	    aContainer(Container.DocumentType.ASICE).  
 	        	    fromStream(inputStream).
 	        	    build();
 	        log.info("Konteineri faile kokku " + container.getDataFiles().size());  
