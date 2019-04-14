@@ -315,30 +315,31 @@ public class SigningController {
 	        	    fromStream(inputStream).
 	        	    build();        	        	        
 	        
-	        log.info("Konteiner getCertificate"); 	        
+	        log.info("addLTTMSignToContainer Konteiner getCertificate"); 	        
 	        X509Certificate signerCert = signer.getCertificate(sertInHex);	        
 	        log.info("Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
 	        
-	        log.info("Konteiner SignatureBuilder");
+	        log.info("addLTTMSignToContainer Konteiner SignatureBuilder");
 	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
 	        	    aSignature(container).
 	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
 	        	    withSignatureProfile(Seadistus.getSignatureProfile()). 
 	        	    withSigningCertificate(signerCert);
 	        //Seadistus.getSignatureProfile()
+	        log.info("addLTTMSignToContainer Konteiner DataToSign");
 	        DataToSign dataToSign = builder.withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();	
 	        profiil=dataToSign.getConfiguration().getSignatureProfile().name();
-	        log.info("DataToSign SignatureProfile: "+profiil);	        
-	        log.info("DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
-	        log.info("DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
-	        log.info("DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
+	        log.info("addLTTMSignToContainer DataToSign SignatureProfile: "+profiil);	        
+	        log.info("addLTTMSignToContainer DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
+	        log.info("addLTTMSignToContainer DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
+	        log.info("addLTTMSignToContainer DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
 	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	     
 	        //log.info("DataToSign muudetud TspSource: "+dataToSign.getConfiguration().getTspSource());
 	        	        
-	        log.info("DatatypeConverter.parseHexBinary "+signatureInHex);
+	        log.info("addLTTMSignToContainer DatatypeConverter.parseHexBinary "+signatureInHex);
 	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
 	        
-	        log.info("Konteiner DataToSign finalize "+serdibaidid.length); 
+	        log.info("addLTTMSignToContainer DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
 	        
 	        //lisame konteinerile signatuuri
