@@ -20,6 +20,7 @@ import org.digidoc4j.ContainerValidationResult;
 import org.digidoc4j.DataFile;
 import org.digidoc4j.DataToSign;
 import org.digidoc4j.Signature;
+import org.digidoc4j.SignatureBuilder;
 import org.digidoc4j.SignatureProfile;
 import org.digidoc4j.ValidationResult;
 import org.digidoc4j.exceptions.DigiDoc4JException;
@@ -291,7 +292,7 @@ public class SigningController {
     
     @RequestMapping(value="/addLTTMSignToContainer", method = RequestMethod.POST)
     public Digest addLTTMSignToContainer(@RequestParam String sertInHex,@RequestParam String signatureInHex
-    		, @RequestParam MultipartFile file) {
+    		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
     	Configuration configuration = Configuration.getInstance();
     	String ocspresponderstm = configuration.getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", "));
@@ -303,12 +304,15 @@ public class SigningController {
     	configuration.setTrustedTerritories("EE");      	
     	digest.setResult(Digest.ERROR_SIGNING);
         log.info("Lisan olemasolevale konteinerile sertifikaati " + file.getOriginalFilename());
-       
+        // http://open-eid.github.io/digidoc4j/
         try
         {	            
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.info("addLTTMSignToContainer Loome konteineri  " + file.getOriginalFilename());  
+	        
+	        
+	        
 	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.ASICE).  
 	        	    withConfiguration(configuration).    	    
@@ -319,32 +323,73 @@ public class SigningController {
 	        X509Certificate signerCert = signer.getCertificate(sertInHex);	        
 	        log.info("Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
 	        
-	        log.info("addLTTMSignToContainer Konteiner SignatureBuilder");
-	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
-	        	    aSignature(container).
-	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
-	        	    withSignatureProfile(Seadistus.getSignatureProfile()). 
-	        	    withSigningCertificate(signerCert);
-	        //Seadistus.getSignatureProfile()
-	        log.info("addLTTMSignToContainer Konteiner DataToSign");
-	        DataToSign dataToSign = builder.withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();	
-	        profiil=dataToSign.getConfiguration().getSignatureProfile().name();
-	        log.info("addLTTMSignToContainer DataToSign SignatureProfile: "+profiil);	        
-	        log.info("addLTTMSignToContainer DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
-	        log.info("addLTTMSignToContainer DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
-	        log.info("addLTTMSignToContainer DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
-	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	     
-	        //log.info("DataToSign muudetud TspSource: "+dataToSign.getConfiguration().getTspSource());
+	        
+//	        log.info("addLTTMSignToContainer Konteiner SignatureBuilder");
+//	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
+//	        	    aSignature(container).
+//	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
+//	        	    withSignatureProfile(Seadistus.getSignatureProfile()). 
+//	        	    withSigningCertificate(signerCert);
+	      
+// Cannot invoke signing without signature token. Add 'withSignatureToken()' method call or call 'buildDataToSign() instead.'	        
+//	        log.info("addLTTMSignToContainer signature");
+//	        Signature signature = org.digidoc4j.SignatureBuilder.
+//	        	    aSignature(container).
+//	        	    withSigningCertificate(signerCert).
+//	        	    withSignatureProfile(Seadistus.getSignatureProfile()).
+//	        	    invokeSigning();
+	        
+//	        log.info("addLTTMSignToContainer dataToSign");
+//	        DataToSign dataToSign = org.digidoc4j.SignatureBuilder.
+//	        	    aSignature(container).
+//	        	    withSigningCertificate(signerCert).
+//	        	    withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();
+	        
+        	log.info("addLTTMSignToContainer deserialize");
+	        fileBytes = dfile.getBytes();	        
+	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);                       
 	        	        
-	        log.info("addLTTMSignToContainer DatatypeConverter.parseHexBinary "+signatureInHex);
 	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
 	        
 	        log.info("addLTTMSignToContainer DataToSign finalize "+serdibaidid.length); 
 	        Signature signature = dataToSign.finalize(serdibaidid);
 	        
 	        //lisame konteinerile signatuuri
-	        log.info("Konteiner addSignature, SubjectName: "+signature.getSigningCertificate().getSubjectName()); 
+	        log.info("addLTTMSignToContainer addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
 	        container.addSignature(signature);
+	        	        
+	        //signer.signContainer(container, dataToSign, signatureInHex);
+	        
+	        
+//	        log.info("addLTTMSignToContainer serdibaidid");
+//	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
+//	        log.info("addLTTMSignToContainer finalize");
+//	        Signature signature = dataToSign.finalize(serdibaidid);	                	
+//	        
+//	        log.info("addLTTMSignToContainer addsignature");
+//	        container.addSignature(signature);	        
+	        
+	        
+//	        //Seadistus.getSignatureProfile()
+//	        log.info("addLTTMSignToContainer Konteiner DataToSign");
+//	        DataToSign dataToSign = builder.withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();	
+//	        profiil=dataToSign.getConfiguration().getSignatureProfile().name();
+//	        log.info("addLTTMSignToContainer DataToSign SignatureProfile: "+profiil);	        
+//	        log.info("addLTTMSignToContainer DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
+//	        log.info("addLTTMSignToContainer DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
+//	        log.info("addLTTMSignToContainer DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
+//	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	     
+//	        //log.info("DataToSign muudetud TspSource: "+dataToSign.getConfiguration().getTspSource());
+//	        	        
+//	        log.info("addLTTMSignToContainer DatatypeConverter.parseHexBinary "+signatureInHex);
+//	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
+//	        
+//	        log.info("addLTTMSignToContainer DataToSign finalize "+serdibaidid.length); 
+//	        Signature signature = dataToSign.finalize(serdibaidid);
+//	        
+//	        //lisame konteinerile signatuuri
+//	        log.info("Konteiner addSignature, SubjectName: "+signature.getSigningCertificate().getSubjectName()); 
+//	        container.addSignature(signature);
 	        
 	        log.info("Konteiner container.saveAsStream"); 
             InputStream containerStream = container.saveAsStream();
@@ -363,7 +408,7 @@ public class SigningController {
         		cause=e.getCause().getMessage();        		
         	}
             log.error("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause+" Profiil:"+profiil, e);
-            digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause+" Profiil:"+profiil);
+            digest.setResult("Error Viga konteinerile signatuuri lisamisel "+e.getMessage()+" "+cause); //+" Profiil:"+profiil);
         }
         return digest;
     }    
