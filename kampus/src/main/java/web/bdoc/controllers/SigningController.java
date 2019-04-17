@@ -310,9 +310,7 @@ public class SigningController {
 	        byte[] fileBytes = file.getBytes();	        
 	        InputStream inputStream = new ByteArrayInputStream(fileBytes);
 	        log.info("addLTTMSignToContainer Loome konteineri  " + file.getOriginalFilename());  
-	        
-	        
-	        
+	        	        	        
 	        Container container = BDocContainerBuilder.
 	        	    aContainer(Container.DocumentType.ASICE).  
 	        	    withConfiguration(configuration).    	    
@@ -322,28 +320,6 @@ public class SigningController {
 	        log.info("addLTTMSignToContainer Konteiner getCertificate"); 	        
 	        X509Certificate signerCert = signer.getCertificate(sertInHex);	        
 	        log.info("Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
-	        
-	        
-//	        log.info("addLTTMSignToContainer Konteiner SignatureBuilder");
-//	        org.digidoc4j.SignatureBuilder builder = org.digidoc4j.SignatureBuilder.
-//	        	    aSignature(container).
-//	        	    withSignatureDigestAlgorithm(org.digidoc4j.DigestAlgorithm.SHA256).
-//	        	    withSignatureProfile(Seadistus.getSignatureProfile()). 
-//	        	    withSigningCertificate(signerCert);
-	      
-// Cannot invoke signing without signature token. Add 'withSignatureToken()' method call or call 'buildDataToSign() instead.'	        
-//	        log.info("addLTTMSignToContainer signature");
-//	        Signature signature = org.digidoc4j.SignatureBuilder.
-//	        	    aSignature(container).
-//	        	    withSigningCertificate(signerCert).
-//	        	    withSignatureProfile(Seadistus.getSignatureProfile()).
-//	        	    invokeSigning();
-	        
-//	        log.info("addLTTMSignToContainer dataToSign");
-//	        DataToSign dataToSign = org.digidoc4j.SignatureBuilder.
-//	        	    aSignature(container).
-//	        	    withSigningCertificate(signerCert).
-//	        	    withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();
 	        
         	log.info("addLTTMSignToContainer deserialize");
 	        fileBytes = dfile.getBytes();	        
@@ -357,40 +333,7 @@ public class SigningController {
 	        //lisame konteinerile signatuuri
 	        log.info("addLTTMSignToContainer addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
 	        container.addSignature(signature);
-	        	        
-	        //signer.signContainer(container, dataToSign, signatureInHex);
-	        
-	        
-//	        log.info("addLTTMSignToContainer serdibaidid");
-//	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
-//	        log.info("addLTTMSignToContainer finalize");
-//	        Signature signature = dataToSign.finalize(serdibaidid);	                	
-//	        
-//	        log.info("addLTTMSignToContainer addsignature");
-//	        container.addSignature(signature);	        
-	        
-	        
-//	        //Seadistus.getSignatureProfile()
-//	        log.info("addLTTMSignToContainer Konteiner DataToSign");
-//	        DataToSign dataToSign = builder.withSignatureProfile(Seadistus.getSignatureProfile()).buildDataToSign();	
-//	        profiil=dataToSign.getConfiguration().getSignatureProfile().name();
-//	        log.info("addLTTMSignToContainer DataToSign SignatureProfile: "+profiil);	        
-//	        log.info("addLTTMSignToContainer DataToSign TspSource: "+dataToSign.getConfiguration().getTspSource());	        
-//	        log.info("addLTTMSignToContainer DataToSign OcspSource: "+dataToSign.getConfiguration().getOcspSource());	 
-//	        log.info("addLTTMSignToContainer DataToSign AllowedOcspRespondersForTM: "+dataToSign.getConfiguration().getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", ")));
-//	        //dataToSign.getConfiguration().setTspSource("http://dd-at.ria.ee/tsa");	     
-//	        //log.info("DataToSign muudetud TspSource: "+dataToSign.getConfiguration().getTspSource());
-//	        	        
-//	        log.info("addLTTMSignToContainer DatatypeConverter.parseHexBinary "+signatureInHex);
-//	        byte[] serdibaidid = DatatypeConverter.parseHexBinary(signatureInHex);
-//	        
-//	        log.info("addLTTMSignToContainer DataToSign finalize "+serdibaidid.length); 
-//	        Signature signature = dataToSign.finalize(serdibaidid);
-//	        
-//	        //lisame konteinerile signatuuri
-//	        log.info("Konteiner addSignature, SubjectName: "+signature.getSigningCertificate().getSubjectName()); 
-//	        container.addSignature(signature);
-	        
+	        	        	        
 	        log.info("Konteiner container.saveAsStream"); 
             InputStream containerStream = container.saveAsStream();
             log.info("Konteiner IOUtils.toByteArray"); 
