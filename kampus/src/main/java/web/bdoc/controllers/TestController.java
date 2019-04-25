@@ -34,6 +34,7 @@ public class TestController {
 		Configuration configuration = Configuration.getInstance();
 		String port = environment.getProperty("local.server.port");
 		String info = Seadistus.getSignatureProfileName();
+		
 		info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD")+" Profiil:"+info+" Digidoc4j 3.3.1";
 		log.info(info);
         return info; 
