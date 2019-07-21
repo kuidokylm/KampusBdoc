@@ -2,6 +2,7 @@ package web.bdoc.controllers;
 
 
 import org.digidoc4j.Configuration;
+import org.digidoc4j.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,14 @@ public class TestController {
 		String port = environment.getProperty("local.server.port");
 		String info = Seadistus.getSignatureProfileName();
 		
-		info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD")+" Profiil:"+info+" Digidoc4j 3.3.1";
+
+		String versioon = org.digidoc4j.Version.VERSION;
+		if ( versioon == null)
+		{
+			versioon="3.2.0";
+		}
+				
+		info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD")+" Profiil:"+info+" Digidoc4j: "+versioon;
 		log.info(info);
         return info; 
 	}
@@ -55,5 +63,5 @@ public class TestController {
 		}
         return vastus; 
 	}
-	
+		
 }
