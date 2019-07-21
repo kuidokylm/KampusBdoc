@@ -33,6 +33,10 @@ KampusBdoc.exe uninstall
 KampusBdoc.exe install
 KampusBdoc.exe start
 
+Debugimine Eclipses
+1. KampusApplication.java peal hiire paremklõps Debug as Java Application
+2. Sirvikus http://localhost:8083/port
+
 */
 
 @SpringBootApplication
