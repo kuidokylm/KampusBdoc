@@ -19,7 +19,7 @@ KampusBdoc.xml faili sisu
 <service>
 <id>KampusBdoc</id>
 <name>KampusBdoc</name>
-<description>KAMPUS BDOC veebiteenus, Spring Boot as a Service.</description>
+<description>KAMPUS ASICE veebiteenus, Spring Boot as a Service.</description>
 <env name="MYAPP_HOME" value="%BASE%"/>
 <executable>java</executable>
 <arguments>-Xmx512m -jar "%BASE%\bdoc-0.0.1-SNAPSHOT.jar"</arguments>
