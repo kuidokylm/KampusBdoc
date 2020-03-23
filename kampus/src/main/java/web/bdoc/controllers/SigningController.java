@@ -117,11 +117,13 @@ public class SigningController {
             String mimeType = file.getContentType();
             DataFile dataFile = new DataFile(fileBytes, fileName, mimeType);
             log.info("Loon ülesse laetud faili jaoks konteineri");
-            Container container = signer.createContainer(dataFile);            
+            Container container = signer.createContainer(dataFile);                  
                         
             //serialiseerime konteineri
             byte[] containerdata = SerializationUtils.serialize(container);
             digest.setContainer(containerdata);
+            		
+            signer.getDataToSign(container, certInHex);
             
             DataToSign dataToSign = signer.getDataToSign(container, certInHex);
             log.info("uploadforhash dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
