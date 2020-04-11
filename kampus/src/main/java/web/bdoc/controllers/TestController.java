@@ -40,12 +40,16 @@ public class TestController {
 		String versioon = org.digidoc4j.Version.VERSION;
 		if ( versioon == null)
 		{
-			versioon="3.3.0";
+			versioon="4.0.0";
 		}
-				
+	
 		info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD")+" Profiil:"+info+" Digidoc4j: "+versioon;
 		log.info(info);
-        return info; 
+		String ocsp = "OCSP: "+configuration.getOcspSource();
+		log.info(ocsp);
+		String tsp = "TSP: "+configuration.getTspSource();
+		log.info(tsp);
+        return info+" "+ocsp+" "+tsp; 
 	}
 	
 	@GetMapping(value= {"/refreshtsl"})
