@@ -7,7 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //https://www.baeldung.com/spring-boot-app-as-a-service
 // Repositorium https://github.com/kuidokylm/KampusBdoc.git
 //http://repo.jenkins-ci.org/releases/com/sun/winsw/winsw/2.1.2/
-//Allatõmmatud exe nimeta ümber KampusBdoc.exe 
+//http://repo.jenkins-ci.org/releases/com/sun/winsw/winsw/2.7.0/
+//http://repo.jenkins-ci.org/releases/com/sun/winsw/winsw/2.7.0/winsw-2.7.0-net461.exe
+//--Allatõmmatud exe 
+//nimeta ümber KampusBdoc.exe 
 //käivita Administraatori õigustes KampusBdoc.exe install
 
 //Seadistus.java klassis määrad ära, mis kinnitusteenust kasutad
