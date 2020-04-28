@@ -234,6 +234,7 @@ public class SigningController {
 		        	sigu.setErrors(vead);
 		        }
 		        signatuurid.add(sigu);
+		        //hoiatused ei ole selles kontektis olulised
 //		        if (sres.getWarnings().size() > 0 )
 //		        {
 //		        	String vead = sres.getWarnings().stream()
