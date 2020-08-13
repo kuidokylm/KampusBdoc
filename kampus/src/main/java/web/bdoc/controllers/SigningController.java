@@ -537,7 +537,7 @@ public class SigningController {
 	        //X509Certificate signerCert = signer.getCertificate(sertInHex);	 
 	        X509Certificate signerCert = getCertificatefromHash(sertInHex);
 	        
-	        log.info("Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
+	        log.info("addLTTMSignToContainer Certificate Name:"+signerCert.getSubjectDN().getName()); 	    
 	        
         	log.info("addLTTMSignToContainer deserialize");
 	        fileBytes = dfile.getBytes();	        
@@ -552,14 +552,15 @@ public class SigningController {
 	        log.info("addLTTMSignToContainer addSignature subject: "+signature.getSigningCertificate().getSubjectName()); 
 	        container.addSignature(signature);
 	        	        	        
-	        log.info("Konteiner container.saveAsStream"); 
+	        log.info("addLTTMSignToContainer Konteiner container.saveAsStream"); 
             InputStream containerStream = container.saveAsStream();
             log.info("Konteiner IOUtils.toByteArray"); 
             byte[] containerdata = IOUtils.toByteArray(containerStream);
             
-            log.info("Kontener digest.setContainer"); 
+            log.info("addLTTMSignToContainer Konteiner digest.setContainer"); 
             digest.setContainer(containerdata);
             digest.setHex("application/vnd.etsi.asic-e+zip"); 
+            log.info("addLTTMSignToContainer Digest.OK"); 
             digest.setResult(Digest.OK);
             return digest;
         } catch (Exception e) {
