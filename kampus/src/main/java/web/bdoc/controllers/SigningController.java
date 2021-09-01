@@ -186,6 +186,8 @@ public class SigningController {
     
     @RequestMapping(value="/getContainerSignatures", method = RequestMethod.POST)
     public Signatuurid getContainerSignatures(@RequestParam MultipartFile file) {
+    	Configuration configuration = Configuration.getInstance();
+    	configuration.setMaxAllowedZipCompressionRatio(100);
     	Signatuurid signad = new Signatuurid();
     	signad.setResult(Digest.ERROR_GETTING_SIGNATURES);
         log.info("Konteineri signatuurid " + file.getOriginalFilename());    
@@ -351,6 +353,8 @@ public class SigningController {
     
     @RequestMapping(value="/validateContainer", method = RequestMethod.POST)
     public Valideerimine validateContainer(@RequestParam MultipartFile file) {
+    	Configuration configuration = Configuration.getInstance();
+    	configuration.setMaxAllowedZipCompressionRatio(100);
     	Valideerimine valideerimine = new Valideerimine(Valideerimine.VALIDATION_ERRORS);
         log.info("valideerin konteinerit " + file.getOriginalFilename());    
         try
@@ -511,6 +515,7 @@ public class SigningController {
     		, @RequestParam MultipartFile file, @RequestParam MultipartFile dfile) {
     	Digest digest = new Digest();
     	Configuration configuration = Configuration.getInstance();
+    	configuration.setMaxAllowedZipCompressionRatio(100);
     	String ocspresponderstm = configuration.getAllowedOcspRespondersForTM().stream().collect(Collectors.joining(", "));
     	log.info("addLTTMSignToContainer Configuration AllowedOcspRespondersForTM "+ocspresponderstm);
     	log.info("addLTTMSignToContainer Configuration getOcspSource "+configuration.getOcspSource());
