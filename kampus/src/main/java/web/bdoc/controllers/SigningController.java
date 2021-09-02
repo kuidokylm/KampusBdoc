@@ -298,8 +298,15 @@ public class SigningController {
 //	        	signad.setResult(Digest.ERROR_INVALID_SIGNATURES);
 //	        }
             return signad;
-        } catch (Exception e) {
+        } 
+        catch (org.digidoc4j.exceptions.TechnicalException e)
+        {
+        	log.error("Error getContainerSignatures TechnicalException "+e.getMessage(), e);
+        	signad.setResult(Digest.ERROR_GETTING_SIGNATURES+" "+e.getMessage());
+        }        
+        catch (Exception e) {
             log.error("Error getContainerSignatures "+e.getMessage(), e);
+            signad.setResult(Digest.ERROR_GETTING_SIGNATURES+" "+e.getMessage());
         }
         return signad;
     }
