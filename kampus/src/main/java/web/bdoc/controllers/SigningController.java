@@ -187,7 +187,8 @@ public class SigningController {
     @RequestMapping(value="/getContainerSignatures", method = RequestMethod.POST)
     public Signatuurid getContainerSignatures(@RequestParam MultipartFile file) {
     	Configuration configuration = Configuration.getInstance();
-    	configuration.setMaxAllowedZipCompressionRatio(100);
+    	configuration.setMaxAllowedZipCompressionRatio(90);
+    	configuration.setZipCompressionRatioCheckThresholdInBytes(4194304L);
     	Signatuurid signad = new Signatuurid();
     	signad.setResult(Digest.ERROR_GETTING_SIGNATURES);
         log.info("Konteineri signatuurid " + file.getOriginalFilename());    
