@@ -112,7 +112,14 @@ public class SigningController {
             digest.setContainer(containerdata);
             
 //            DataToSign dataToSign = signer.getDataToSign(container, certInHex); //VANA    
-            log.info("DataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
+            if ( dataToSign.getConfiguration().getSignatureProfile() != null)
+            {
+            	log.info("DataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
+            }
+            else
+            {
+            	log.info("DataToSign profile dataToSign.getConfiguration().getSignatureProfile() == null");
+            }
             
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);   
@@ -479,7 +486,15 @@ public class SigningController {
 	        fileBytes = dfile.getBytes();	        
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);   
 	        log.info("DataToSign taastatud hashCode:"+String.valueOf(dataToSign.hashCode()));  
-	        log.info("createContainer dataToSign SignatureProfile:"+dataToSign.getConfiguration().getSignatureProfile().name());  
+	        if (dataToSign.getConfiguration().getSignatureProfile() != null)
+	        {
+	        	log.info("createContainer dataToSign SignatureProfile:"+dataToSign.getConfiguration().getSignatureProfile().name());  
+	        }
+	        else
+	        {
+	        	log.info("createContainer dataToSign SignatureProfile dataToSign.getConfiguration().getSignatureProfile()==null");  
+	        	
+	        }
 	        log.info("createContainer dataToSign OCSP:"+dataToSign.getConfiguration().getOcspSource());
 	        log.info("createContainer dataToSign TSP:"+dataToSign.getConfiguration().getTspSource());
 	        
@@ -490,8 +505,11 @@ public class SigningController {
 	        log.info("Finalize container TSP:"+temp);
 	        temp=container.getConfiguration().getValidationPolicy();
 	        log.info("Finalize container ValidationPolicy:"+temp);
-	        temp=container.getConfiguration().getSignatureProfile().name();
-	        log.info("Finalize container SignatureProfile:"+temp);
+	        if (container.getConfiguration().getSignatureProfile() != null)
+	        {
+	        	temp=container.getConfiguration().getSignatureProfile().name();
+	        	log.info("Finalize container SignatureProfile:"+temp);
+	        }
 	      //Finalize the signature with OCSP response and timestamp (or timemark)
 	        byte[] signatureBytes = DatatypeConverter.parseHexBinary(signatureInHex);	            
 	        Signature signature = dataToSign.finalize(signatureBytes);
