@@ -116,10 +116,6 @@ public class SigningController {
             {
             	log.info("DataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
             }
-            else
-            {
-            	log.info("DataToSign profile dataToSign.getConfiguration().getSignatureProfile() == null");
-            }
             
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);   
@@ -173,8 +169,10 @@ public class SigningController {
             	    withSignatureProfile(Seadistus.getSignatureProfile()).
             	    buildDataToSign();     
             
-            
-            log.info("uploadforhash dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
+            if (dataToSign.getConfiguration().getSignatureProfile() != null)
+            {
+            	log.info("uploadforhash dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
+            }
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
@@ -334,8 +332,10 @@ public class SigningController {
 	        	    aContainer(Container.DocumentType.ASICE).
 	        	    fromStream(inputStream).	        	    
 	        	    build();	        
-	        
-	        log.info("getContainerToSign Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
+	        if (container.getConfiguration().getSignatureProfile() != null)
+	        {
+	        	log.info("getContainerToSign Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
+	        }
 	        log.info("getContainerToSign DataToSign "+StringUtils.left(certInHex, 30) + "...");  	        
 	        //DataToSign dataToSign = signer.getDataToSign(container, certInHex);		 
 	        
@@ -346,9 +346,10 @@ public class SigningController {
             	    withSignatureDigestAlgorithm(Seadistus.getDigestAlgorithm()).
             	    withSignatureProfile(Seadistus.getSignatureProfile()).
             	    buildDataToSign();     	        
-	        
-	        log.info("getContainerToSign DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().name());
-	        
+	        if (dataToSign.getConfiguration().getSignatureProfile() != null )
+	        {
+	        	log.info("getContainerToSign DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().name());
+	        }
 	        log.info("DataToSign serialiseerimine");            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
@@ -490,11 +491,6 @@ public class SigningController {
 	        {
 	        	log.info("createContainer dataToSign SignatureProfile:"+dataToSign.getConfiguration().getSignatureProfile().name());  
 	        }
-	        else
-	        {
-	        	log.info("createContainer dataToSign SignatureProfile dataToSign.getConfiguration().getSignatureProfile()==null");  
-	        	
-	        }
 	        log.info("createContainer dataToSign OCSP:"+dataToSign.getConfiguration().getOcspSource());
 	        log.info("createContainer dataToSign TSP:"+dataToSign.getConfiguration().getTspSource());
 	        
@@ -548,7 +544,10 @@ public class SigningController {
     	log.info("addLTTMSignToContainer Configuration AllowedOcspRespondersForTM "+ocspresponderstm);
     	log.info("addLTTMSignToContainer Configuration getOcspSource "+configuration.getOcspSource());
     	log.info("addLTTMSignToContainer Configuration getTspSource "+configuration.getTspSource());
-    	log.info("addLTTMSignToContainer Configuration profile " + configuration.getSignatureProfile().name());
+    	if (configuration.getSignatureProfile() != null)
+    	{
+    		log.info("addLTTMSignToContainer Configuration profile " + configuration.getSignatureProfile().name());
+    	}
     	String profiil="";
     	configuration.setTrustedTerritories("EE");      	
     	digest.setResult(Digest.ERROR_SIGNING);
@@ -640,7 +639,6 @@ public class SigningController {
             digest.setContainer(containerdata);
             
             DataToSign dataToSign = signer.getDataToSign(container, certInHex);            
-            log.info("dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
             
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
@@ -676,7 +674,6 @@ public class SigningController {
             digest.setContainer(containerdata);
             		
             DataToSign dataToSign = signer.getDataToSign(container, certInHex);
-            log.info("uploadforhash dataToSign profile "+dataToSign.getConfiguration().getSignatureProfile().name());
             //serialiseerime            
             byte[] data = SerializationUtils.serialize(dataToSign);            
             digest.setDataToSign(data);
@@ -710,7 +707,6 @@ public class SigningController {
 	        //deserialiseerime datatosign 	        
 	        fileBytes = dfile.getBytes();	        
 	        DataToSign dataToSign = (DataToSign) SerializationUtils.deserialize(fileBytes);                       
-	        log.info("createContainer dataToSign profiil "+dataToSign.getConfiguration().getSignatureProfile().name());  
 	        
 	        //lisame konteinerile signatuuri
 	        log.info("Lisan konteinerile signatuuri");  
@@ -750,10 +746,8 @@ public class SigningController {
 	        	    fromStream(inputStream).	        	    
 	        	    build();	        
 	        
-	        log.info("getContainerToSign Konteiner SignatureProfile " + container.getConfiguration().getSignatureProfile().toString());
 	        log.info("getContainerToSign DataToSign "+StringUtils.left(certInHex, 30) + "...");  	        
 	        DataToSign dataToSign = signer.getDataToSign(container, certInHex);		       
-	        log.info("getContainerToSign DataToSign SignatureProfile " + dataToSign.getConfiguration().getSignatureProfile().name());
 
 	        
 	        log.info("DataToSign serialiseerimine");            
@@ -784,7 +778,6 @@ public class SigningController {
     	log.info("addLTTMSignToContainer Configuration AllowedOcspRespondersForTM "+ocspresponderstm);
     	log.info("addLTTMSignToContainer Configuration getOcspSource "+configuration.getOcspSource());
     	log.info("addLTTMSignToContainer Configuration getTspSource "+configuration.getTspSource());
-    	log.info("addLTTMSignToContainer Configuration profile " + configuration.getSignatureProfile().name());
     	String profiil="";
     	configuration.setTrustedTerritories("EE");      	
     	digest.setResult(Digest.ERROR_SIGNING);
