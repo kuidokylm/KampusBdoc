@@ -40,6 +40,9 @@ Debugimine Eclipses
 1. KampusApplication.java peal hiire paremklõps Debug as Java Application
 2. Sirvikus http://localhost:8083/port
 
+Kompileerimine
+Eclipse vasakus Project Explorer vaates Run As -> Run Configurations -> clean package
+
 */
 
 @SpringBootApplication

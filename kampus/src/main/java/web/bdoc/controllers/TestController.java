@@ -40,7 +40,7 @@ public class TestController {
 		String versioon = org.digidoc4j.Version.VERSION;
 		if ( versioon == null)
 		{
-			versioon="5.3.0";
+			versioon="5.1.0";
 		}
 	
 		info = "Port:"+port+" Seadistus:"+(configuration.isTest() ? "TEST" : "PROD")+" Profiil:"+info+" Digidoc4j: "+versioon;
